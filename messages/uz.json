@@ -192,6 +192,8 @@
       "usernameCopied": "Username nusxalandi",
       "passwordCopied": "Parol nusxalandi",
       "copyFailed": "Nusxalash amalga oshmadi",
+      "addedToFavorites": "Sevimlilarga qo'shildi",
+      "removedFromFavorites": "Sevimlilardan olib tashlandi",
       "created": "Credential saqlandi",
       "updated": "Credential yangilandi",
       "deleted": "Credential o'chirildi",

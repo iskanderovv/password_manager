@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Fingerprint, House, PlusCircle, Settings, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -63,16 +62,6 @@ export function SidebarNav() {
           );
         })}
       </nav>
-
-      <div className="border-t border-sidebar-border p-4">
-        <div className="rounded-xl border border-sidebar-border bg-muted/30 p-3">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50">{t("common.security")}</p>
-          <p className="mt-1 text-xs font-medium text-sidebar-foreground/80">{t("vault.insights.title")}</p>
-          <div className="mt-3">
-            <Badge variant="warning">{t("common.statusNeedsAttention")}</Badge>
-          </div>
-        </div>
-      </div>
     </aside>
   );
 }

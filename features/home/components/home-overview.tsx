@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppPreferences } from "@/features/preferences/hooks/use-app-preferences";
 import { getLastUnlockedAt } from "@/lib/auth/vault-session";
@@ -21,10 +19,9 @@ type HomeOverviewMetrics = {
 
 type HomeOverviewProps = {
   metrics: HomeOverviewMetrics;
-  vaultName: string | null;
 };
 
-export function HomeOverview({ metrics, vaultName }: HomeOverviewProps) {
+export function HomeOverview({ metrics }: HomeOverviewProps) {
   const t = useTranslations();
   const { preferences } = useAppPreferences();
   const [lastUnlockedAt, setLastUnlockedAt] = useState<string | null>(null);
@@ -68,7 +65,7 @@ export function HomeOverview({ metrics, vaultName }: HomeOverviewProps) {
         </Card>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[1.2fr,0.8fr]">
+      <section className="grid gap-4">
         <Card className="premium-card">
           <CardHeader>
             <CardTitle className="text-base">{t("home.session.title")}</CardTitle>
@@ -95,26 +92,6 @@ export function HomeOverview({ metrics, vaultName }: HomeOverviewProps) {
                 {preferences.autoLockMode === "manual" ? t("topbar.autoLockManual") : t("topbar.autoLockEnabled")}
               </Badge>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="premium-card">
-          <CardHeader>
-            <CardTitle className="text-base">{t("home.quickActions.title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button asChild className="w-full justify-start">
-              <Link href="/vault">{t("home.quickActions.openVault")}</Link>
-            </Button>
-            <Button asChild variant="secondary" className="w-full justify-start">
-              <Link href="/vault/new">{t("home.quickActions.addCredential")}</Link>
-            </Button>
-            <Button asChild variant="outline" className="w-full justify-start">
-              <Link href="/settings">{t("home.quickActions.openSettings")}</Link>
-            </Button>
-            <p className="pt-1 text-xs text-muted-foreground">
-              {t("home.quickActions.vaultLabel", { name: vaultName ?? t("home.quickActions.defaultVaultName") })}
-            </p>
           </CardContent>
         </Card>
       </section>

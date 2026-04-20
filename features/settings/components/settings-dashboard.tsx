@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Download, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8,10 +7,10 @@ import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast-provider";
 import { evaluateCredentialPasswordStrength } from "@/features/security-health/lib/password-strength";
-import { analyzeSecurityHealth } from "@/features/security-health/lib/insights";
 import { decryptCredentialRecord } from "@/features/vault/lib/client-vault";
 import { getActiveVaultKey, setActiveVaultKey } from "@/lib/crypto/key-store";
 import { deriveKey, encrypt } from "@/lib/crypto/vault-crypto";
@@ -64,8 +63,6 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
   const [isExporting, startExporting] = useTransition();
 
   const [decryptedCredentials, setDecryptedCredentials] = useState<Awaited<ReturnType<typeof decryptCredentialRecord>>[]>([]);
-  const [decryptError, setDecryptError] = useState<string | null>(null);
-  const [health, setHealth] = useState<Awaited<ReturnType<typeof analyzeSecurityHealth>> | null>(null);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -86,9 +83,7 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
     const keyState = getActiveVaultKey();
 
     if (!keyState) {
-      setDecryptError("vault.errors.unlockRequired");
       setDecryptedCredentials([]);
-      setHealth(null);
       return;
     }
 
@@ -98,7 +93,6 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
     }
 
     let cancelled = false;
-    setDecryptError(null);
 
     void Promise.all(payload.credentials.map((record) => decryptCredentialRecord(record, keyState.key)))
       .then((records) => {
@@ -107,7 +101,7 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
       })
       .catch(() => {
         if (cancelled) return;
-        setDecryptError("vault.errors.decryptFailed");
+        setDecryptedCredentials([]);
       });
 
     return () => {
@@ -115,63 +109,36 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
     };
   }, [payload.credentials, payload.vaultId, router]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    void analyzeSecurityHealth(decryptedCredentials)
-      .then((result) => {
-        if (cancelled) return;
-        setHealth(result);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setHealth(null);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [decryptedCredentials]);
-
-  const issueLinks = useMemo(
+  const autoLockOptions = useMemo(
+    () =>
+      autoLockModes.map((mode) => ({
+        value: mode,
+        label: t(`settings.security.autoLock.options.${mode}`),
+      })),
+    [t],
+  );
+  const localeOptions = useMemo(
     () => [
-      {
-        type: "reused",
-        label: t("settings.security.health.issues.reused"),
-        description: t("settings.security.health.issuesDescriptions.reused"),
-        count: health?.reusedCount ?? 0,
-        tone: "danger" as const,
-      },
-      {
-        type: "weak",
-        label: t("settings.security.health.issues.weak"),
-        description: t("settings.security.health.issuesDescriptions.weak"),
-        count: health?.weakCount ?? 0,
-        tone: "danger" as const,
-      },
-      {
-        type: "stale",
-        label: t("settings.security.health.issues.stale"),
-        description: t("settings.security.health.issuesDescriptions.stale"),
-        count: health?.staleCount ?? 0,
-        tone: "warning" as const,
-      },
-      {
-        type: "missing-url",
-        label: t("settings.security.health.issues.missingUrl"),
-        description: t("settings.security.health.issuesDescriptions.missingUrl"),
-        count: health?.missingUrlCount ?? 0,
-        tone: "info" as const,
-      },
-      {
-        type: "missing-notes",
-        label: t("settings.security.health.issues.missingNotes"),
-        description: t("settings.security.health.issuesDescriptions.missingNotes"),
-        count: health?.missingNotesCount ?? 0,
-        tone: "info" as const,
-      },
+      { value: "uz", label: t("locales.uz") },
+      { value: "ru", label: t("locales.ru") },
+      { value: "en", label: t("locales.en") },
     ],
-    [health, t],
+    [t],
+  );
+  const themeOptions = useMemo(
+    () => [
+      { value: "light", label: t("common.light") },
+      { value: "dark", label: t("common.dark") },
+      { value: "system", label: t("common.system") },
+    ],
+    [t],
+  );
+  const defaultViewOptions = useMemo(
+    () => [
+      { value: "list", label: t("settings.preferences.defaultView.list") },
+      { value: "compact", label: t("settings.preferences.defaultView.compact") },
+    ],
+    [t],
   );
 
   const onRotateMasterPassword = () => {
@@ -363,86 +330,19 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
         <div className="space-y-2 rounded-xl border border-border/70 bg-background/70 p-4">
           <h3 className="text-sm font-medium">{t("settings.security.autoLock.title")}</h3>
           <p className="text-xs text-muted-foreground">{t("settings.security.autoLock.description")}</p>
-          <select
+          <CustomSelect
             value={preferences.autoLockMode}
-            onChange={(event) =>
+            onValueChange={(value) =>
               setPreferences((current) => ({
                 ...current,
-                autoLockMode: event.target.value as AutoLockMode,
+                autoLockMode: value as AutoLockMode,
               }))
             }
-            aria-label={t("settings.security.autoLock.title")}
-            className="h-10 w-full rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
-          >
-            {autoLockModes.map((mode) => (
-              <option value={mode} key={mode}>
-                {t(`settings.security.autoLock.options.${mode}`)}
-              </option>
-            ))}
-          </select>
+            ariaLabel={t("settings.security.autoLock.title")}
+            options={autoLockOptions}
+          />
         </div>
 
-        <div className="space-y-2 rounded-xl border border-border/70 bg-background/70 p-4">
-          <h3 className="text-sm font-medium">{t("settings.security.health.title")}</h3>
-          <p className="text-xs text-muted-foreground">{t("settings.security.health.description")}</p>
-
-          {decryptError ? <p className="text-xs text-amber-700 dark:text-amber-300">{t(decryptError)}</p> : null}
-
-          <div className="grid gap-2 sm:grid-cols-2">
-            <div className="rounded-lg border border-border/70 px-3 py-2">
-              <p className="text-xs text-muted-foreground">{t("settings.security.health.metrics.total")}</p>
-              <p className="text-xl font-semibold">{health?.totalCredentials ?? 0}</p>
-            </div>
-            <div className="rounded-lg border border-border/70 px-3 py-2">
-              <p className="text-xs text-muted-foreground">{t("settings.security.health.metrics.reused")}</p>
-              <p className="text-xl font-semibold">{health?.reusedCount ?? 0}</p>
-            </div>
-            <div className="rounded-lg border border-border/70 px-3 py-2">
-              <p className="text-xs text-muted-foreground">{t("settings.security.health.metrics.weak")}</p>
-              <p className="text-xl font-semibold">{health?.weakCount ?? 0}</p>
-            </div>
-            <div className="rounded-lg border border-border/70 px-3 py-2">
-              <p className="text-xs text-muted-foreground">{t("settings.security.health.metrics.stale")}</p>
-              <p className="text-xl font-semibold">{health?.staleCount ?? 0}</p>
-            </div>
-            <div className="rounded-lg border border-border/70 px-3 py-2">
-              <p className="text-xs text-muted-foreground">{t("settings.security.health.metrics.missingUrl")}</p>
-              <p className="text-xl font-semibold">{health?.missingUrlCount ?? 0}</p>
-            </div>
-            <div className="rounded-lg border border-border/70 px-3 py-2">
-              <p className="text-xs text-muted-foreground">{t("settings.security.health.metrics.missingNotes")}</p>
-              <p className="text-xl font-semibold">{health?.missingNotesCount ?? 0}</p>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            {issueLinks.map((issue) => (
-              <div
-                key={issue.type}
-                className={`rounded-lg border px-2.5 py-2 ${
-                  issue.tone === "danger"
-                    ? "border-rose-500/30 bg-rose-500/5"
-                    : issue.tone === "warning"
-                      ? "border-amber-500/30 bg-amber-500/5"
-                      : "border-sky-500/25 bg-sky-500/5"
-                }`}
-              >
-                <p className="text-sm font-medium">{issue.label}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{issue.description}</p>
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  <span className="text-xs text-muted-foreground">{issue.count}</span>
-                  {issue.count > 0 ? (
-                    <Button asChild variant="ghost" size="sm">
-                      <Link href={`/vault?issue=${issue.type}`}>{t("settings.security.health.viewAffected")}</Link>
-                    </Button>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">{t("settings.security.health.issuesClear")}</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </SettingsSectionCard>
 
       <SettingsSectionCard
@@ -451,57 +351,46 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
       >
         <label className="space-y-1.5 text-sm">
           <span>{t("settings.preferences.language")}</span>
-          <select
+          <CustomSelect
             value={preferences.locale}
-            onChange={(event) => {
-              const nextLocale = event.target.value as "uz" | "ru" | "en";
+            onValueChange={(value) => {
+              const nextLocale = value as "uz" | "ru" | "en";
               document.cookie = `pm-locale=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
               setPreferences((current) => ({ ...current, locale: nextLocale }));
               router.refresh();
             }}
-            aria-label={t("settings.preferences.language")}
-            className="h-10 w-full rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
-          >
-            <option value="uz">{t("locales.uz")}</option>
-            <option value="ru">{t("locales.ru")}</option>
-            <option value="en">{t("locales.en")}</option>
-          </select>
+            ariaLabel={t("settings.preferences.language")}
+            options={localeOptions}
+          />
         </label>
 
         <label className="space-y-1.5 text-sm">
           <span>{t("settings.preferences.theme")}</span>
-          <select
+          <CustomSelect
             value={(theme ?? "system") as "light" | "dark" | "system"}
-            onChange={(event) => {
-              const nextTheme = event.target.value as "light" | "dark" | "system";
+            onValueChange={(value) => {
+              const nextTheme = value as "light" | "dark" | "system";
               setTheme(nextTheme);
               setPreferences((current) => ({ ...current, theme: nextTheme }));
             }}
-            aria-label={t("settings.preferences.theme")}
-            className="h-10 w-full rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
-          >
-            <option value="light">{t("common.light")}</option>
-            <option value="dark">{t("common.dark")}</option>
-            <option value="system">{t("common.system")}</option>
-          </select>
+            ariaLabel={t("settings.preferences.theme")}
+            options={themeOptions}
+          />
         </label>
 
         <label className="space-y-1.5 text-sm">
           <span>{t("settings.preferences.defaultView.title")}</span>
-          <select
+          <CustomSelect
             value={preferences.defaultVaultView}
-            onChange={(event) =>
+            onValueChange={(value) =>
               setPreferences((current) => ({
                 ...current,
-                defaultVaultView: event.target.value as "list" | "compact",
+                defaultVaultView: value as "list" | "compact",
               }))
             }
-            aria-label={t("settings.preferences.defaultView.title")}
-            className="h-10 w-full rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
-          >
-            <option value="list">{t("settings.preferences.defaultView.list")}</option>
-            <option value="compact">{t("settings.preferences.defaultView.compact")}</option>
-          </select>
+            ariaLabel={t("settings.preferences.defaultView.title")}
+            options={defaultViewOptions}
+          />
         </label>
 
         <div className="space-y-4 rounded-xl border border-border/70 bg-background/70 p-4">

@@ -88,37 +88,18 @@ body {
 }
 
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .premium-card {
   @apply border border-border/70 bg-card/95 shadow-sm;
-  box-shadow:
-    0 1px 1px rgba(16, 24, 40, 0.04),
-    0 2px 8px rgba(16, 24, 40, 0.05);
-}
-
-.glass-muted {
-  background: color-mix(in srgb, var(--muted) 82%, transparent);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 1px rgba(16, 24, 40, 0.04), 0 2px 8px rgba(16, 24, 40, 0.05);
 }
 
 .animate-fade-in-up {
@@ -129,145 +110,181 @@ body {
   animation: scale-in 180ms ease-out;
 }
 
-/* Custom Range Input (Slider) Styling */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-  width: 100%;
+/* 
+  =========================================
+  GLOBAL FORM ELEMENTS STYLING (FORCE APPLY)
+  =========================================
+*/
+
+/* LABEL SPACING */
+label:not([class*="flex"]) {
   display: block;
 }
 
-input[type="range"]:focus {
-  outline: none;
+label[for] {
+  margin-bottom: 0.5rem;
 }
 
-/* Track Styling - Chrome/Safari/Edge */
-input[type="range"]::-webkit-slider-runnable-track {
-  background-color: var(--muted);
-  background-image: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--range-progress, 50%), var(--muted) var(--range-progress, 50%), var(--muted) 100%);
-  border-radius: 8px;
-  height: 8px;
-  transition: all 0.2s ease;
+label:not([class*="space-y"]):not([class*="flex"]) > :is(span, p):first-child + :is(input, textarea, select, div) {
+  margin-top: 0.5rem;
 }
 
-/* Track Styling - Firefox */
-input[type="range"]::-moz-range-track {
-  background-color: var(--muted);
-  border-radius: 8px;
-  height: 8px;
-}
-
-input[type="range"]::-moz-range-progress {
-  background-color: var(--primary);
-  border-radius: 8px;
-  height: 8px;
-}
-
-/* Thumb (The handle) */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  margin-top: -6px; /* (16px thumb - 4px track) / 2 = -6px approx */
-  background-color: var(--card);
-  border-radius: 50%;
-  height: 20px;
-  width: 20px;
-  border: 3px solid var(--primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  cursor: grab;
-  transition: all 0.15s ease-in-out;
-}
-
-input[type="range"]::-moz-range-thumb {
-  background-color: var(--card);
-  border-radius: 50%;
-  height: 20px;
-  width: 20px;
-  border: 3px solid var(--primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  cursor: grab;
-  transition: all 0.15s ease-in-out;
-}
-
-input[type="range"]:active::-webkit-slider-thumb {
-  cursor: grabbing;
-  transform: scale(1.1);
-  background-color: var(--primary);
-  border-color: var(--primary-foreground);
-}
-
-/* Custom Checkbox Styling */
-input[type="checkbox"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border);
-  border-radius: 6px;
-  background-color: var(--card);
-  cursor: pointer;
-  display: grid;
-  place-content: center;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0;
-}
-
-input[type="checkbox"]::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  transform: scale(0);
-  transition: 120ms transform ease-in-out;
-  box-shadow: inset 1em 1em var(--primary-foreground);
-  background-color: CanvasText;
-  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-}
-
-input[type="checkbox"]:checked {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-input[type="checkbox"]:checked::before {
-  transform: scale(1);
-}
-
-input[type="checkbox"]:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-input[type="checkbox"]:hover {
-  border-color: var(--primary);
-}
-
-/* Custom Select Styling */
+/* INPUTS & SELECTS - PREVENT OVERRIDES */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="url"],
+input[type="search"],
+textarea,
 select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1rem;
-  padding-right: 2.5rem !important;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  display: block !important;
+  width: 100% !important;
+  height: 2.875rem !important; /* 46px */
+  padding: 0.5rem 1rem !important;
+  background-color: var(--background) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.875rem !important; /* 14px */
+  font-size: 0.875rem !important;
+  color: var(--foreground) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  outline: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
+.dark input[type="text"],
+.dark input[type="password"],
+.dark input[type="email"],
+.dark input[type="number"],
+.dark input[type="url"],
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+  background-color: color-mix(in srgb, var(--card) 70%, transparent) !important;
+  border-color: var(--border) !important;
+}
+
+input:hover,
+textarea:hover,
 select:hover {
-  border-color: var(--primary);
-  background-color: var(--background);
+  border-color: var(--primary) !important;
+  background-color: var(--background) !important;
 }
 
+input:focus,
+textarea:focus,
 select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+  border-color: var(--primary) !important;
+  background-color: var(--background) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 15%, transparent) !important;
+}
+
+/* CUSTOM SELECT ARROW */
+select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1rem center !important;
+  background-size: 1.125rem !important;
+  padding-right: 3rem !important;
 }
 
 .dark select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+}
+
+/* CHECKBOXES */
+input[type="checkbox"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  border: 2px solid var(--border) !important;
+  border-radius: 0.375rem !important;
+  background-color: var(--card) !important;
+  cursor: pointer !important;
+  display: inline-grid !important;
+  place-content: center !important;
+  vertical-align: middle !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+}
+
+input[type="checkbox"]::before {
+  content: "" !important;
+  width: 0.625rem !important;
+  height: 0.625rem !important;
+  transform: scale(0) !important;
+  transition: 120ms transform ease-in-out !important;
+  box-shadow: inset 1rem 1rem var(--primary-foreground) !important;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%) !important;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1) !important;
+}
+
+/* RANGE SLIDERS */
+input[type="range"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 100% !important;
+  display: block !important;
+  background: transparent !important;
+  height: 1.5rem !important;
+  padding: 0 !important;
+  border: none !important;
+  accent-color: var(--primary) !important;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    var(--primary) 0%,
+    var(--primary) var(--range-progress, 50%),
+    var(--muted) var(--range-progress, 50%),
+    var(--muted) 100%
+  ) !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  margin-top: -6px !important;
+  background-color: var(--card) !important;
+  border: 3px solid var(--primary) !important;
+  height: 20px !important;
+  width: 20px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+input[type="range"]::-moz-range-track {
+  background-color: var(--muted) !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+}
+
+input[type="range"]::-moz-range-progress {
+  background-color: var(--primary) !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background-color: var(--card) !important;
+  border: 3px solid var(--primary) !important;
+  height: 20px !important;
+  width: 20px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }

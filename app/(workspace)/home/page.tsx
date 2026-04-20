@@ -2,7 +2,8 @@ import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { HomeOverview } from "@/features/home/components/home-overview";
-import { getActiveVaultMeta, getVaultOverviewPayload } from "@/features/vault/lib/server-vault";
+import { SecurityHealthPanel } from "@/features/security-health/components/security-health-panel";
+import { getVaultOverviewPayload } from "@/features/vault/lib/server-vault";
 
 function isSameDay(a: Date, b: Date) {
   return (
@@ -14,7 +15,7 @@ function isSameDay(a: Date, b: Date) {
 
 export default async function HomePage() {
   const t = await getTranslations();
-  const [payload, vaultMeta] = await Promise.all([getVaultOverviewPayload(), getActiveVaultMeta()]);
+  const payload = await getVaultOverviewPayload();
 
   const now = new Date();
   const totalCredentials = payload.credentials.length;
@@ -28,8 +29,8 @@ export default async function HomePage() {
       <PageHeader title={t("home.title")} subtitle={t("home.subtitle")} />
       <HomeOverview
         metrics={{ totalCredentials, totalTags, weakCredentials, missingUrl, updatedToday }}
-        vaultName={vaultMeta?.name ?? null}
       />
+      <SecurityHealthPanel payload={payload} />
     </div>
   );
 }

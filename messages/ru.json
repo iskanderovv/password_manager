@@ -192,6 +192,8 @@
       "usernameCopied": "Username скопирован",
       "passwordCopied": "Пароль скопирован",
       "copyFailed": "Не удалось скопировать",
+      "addedToFavorites": "Добавлено в избранное",
+      "removedFromFavorites": "Удалено из избранного",
       "created": "Credential сохранен",
       "updated": "Credential обновлен",
       "deleted": "Credential удален",

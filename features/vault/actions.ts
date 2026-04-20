@@ -3,6 +3,7 @@
 import {
   createCredential,
   deleteCredentialById,
+  toggleCredentialFavorite,
   updateCredential,
 } from "@/features/vault/lib/server-vault";
 import type { CredentialActionResult, UpsertCredentialEncryptedInput } from "@/features/vault/types";
@@ -80,4 +81,8 @@ export async function updateCredentialAction(input: UpsertCredentialEncryptedInp
 
 export async function deleteCredentialAction(input: { credentialId: string; vaultId: string }) {
   return deleteCredentialById(input);
+}
+
+export async function toggleFavoriteAction(input: { credentialId: string; vaultId: string; isFavorite: boolean }) {
+  return toggleCredentialFavorite(input);
 }

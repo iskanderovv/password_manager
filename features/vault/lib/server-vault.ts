@@ -129,6 +129,9 @@ export async function getVaultOverviewPayload(): Promise<VaultOverviewPayload> {
         passwordEncrypted: true,
         notesEncrypted: true,
         passwordStrengthScore: true,
+        isFavorite: true,
+        isPinned: true,
+        lastUsedAt: true,
         createdAt: true,
         updatedAt: true,
         tags: {
@@ -167,6 +170,9 @@ export async function getCredentialById(id: string) {
       passwordEncrypted: true,
       notesEncrypted: true,
       passwordStrengthScore: true,
+      isFavorite: true,
+      isPinned: true,
+      lastUsedAt: true,
       createdAt: true,
       updatedAt: true,
       isArchived: true,
@@ -306,4 +312,19 @@ export async function deleteCredentialById(input: { credentialId: string; vaultI
   });
 
   return deleted.count > 0;
+}
+
+export async function toggleCredentialFavorite(input: { credentialId: string; vaultId: string; isFavorite: boolean }) {
+  const updated = await prisma.credential.update({
+    where: {
+      id: input.credentialId,
+      vaultId: input.vaultId,
+    },
+    data: {
+      isFavorite: input.isFavorite,
+    },
+    select: { id: true },
+  });
+
+  return Boolean(updated.id);
 }

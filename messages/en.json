@@ -192,6 +192,8 @@
       "usernameCopied": "Username copied",
       "passwordCopied": "Password copied",
       "copyFailed": "Copy failed",
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
       "created": "Credential saved",
       "updated": "Credential updated",
       "deleted": "Credential deleted",
