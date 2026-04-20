@@ -1,14 +1,16 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff, ShieldCheck, Sparkles } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { createMasterPasswordAction, unlockVaultAction } from "@/features/auth/actions";
 import { initialLockActionState } from "@/features/auth/action-state";
 import { useVaultSession } from "@/hooks/use-vault-session";
@@ -128,48 +130,31 @@ export function LockScreen({ hasVault }: LockScreenProps) {
   const currentErrorKey = clientErrorKey ?? (mode === "create" ? createState.errorKey : unlockState.errorKey);
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 lg:px-8">
-      <div className="grid w-full gap-5 lg:grid-cols-[1.15fr,0.85fr]">
-        <Card className="premium-card relative overflow-hidden border-border/80">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(21,94,239,0.16),transparent_55%),radial-gradient(circle_at_85%_10%,rgba(31,143,78,0.12),transparent_45%)]" />
-          <CardContent className="relative flex h-full flex-col justify-between gap-6 p-7 lg:p-9">
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge>{t("common.appName")}</Badge>
-                <Badge variant="secondary">{t("common.appTagline")}</Badge>
-              </div>
+    <div className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 lg:px-8">
+      <div className="mb-6 flex justify-end gap-2">
+        <LocaleSwitcher />
+        <ThemeToggle />
+      </div>
+      <div className="grid items-stretch gap-6 lg:grid-cols-[1.08fr,0.92fr]">
+        <section className="premium-card relative overflow-hidden border-border/80">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(21,94,239,0.14),transparent_50%)]" />
+          <div className="relative flex h-full flex-col justify-center px-7 py-10 lg:px-10">
+            <Badge className="w-fit">{t("common.appName")}</Badge>
+            <p className="mt-5 text-2xl font-semibold tracking-[0.12em] lg:text-4xl">CREDXVAULT</p>
+            <p className="mt-3 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground">
+              TEAM PASSWORD MANAGER
+            </p>
+            <p className="mt-6 max-w-md text-sm text-muted-foreground">
+              {mode === "create" ? t("lock.create.title") : t("lock.unlock.title")}
+            </p>
+          </div>
+        </section>
 
-              <div className="space-y-2">
-                <h1 className="text-3xl font-semibold tracking-tight lg:text-4xl">
-                  {mode === "create" ? t("lock.create.title") : t("lock.unlock.title")}
-                </h1>
-                <p className="max-w-2xl text-sm text-muted-foreground lg:text-base">
-                  {mode === "create" ? t("lock.create.subtitle") : t("lock.unlock.subtitle")}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-2">
-              <div className="glass-muted flex items-start gap-2 rounded-xl border border-border/70 p-3">
-                <ShieldCheck className="mt-0.5 size-4 text-primary" />
-                <p className="text-xs text-muted-foreground">{t("lock.trustItems.zeroKnowledge")}</p>
-              </div>
-              <div className="glass-muted flex items-start gap-2 rounded-xl border border-border/70 p-3">
-                <Sparkles className="mt-0.5 size-4 text-primary" />
-                <p className="text-xs text-muted-foreground">{t("lock.trustItems.audit")}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="premium-card border-border/80 transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="text-xl">
-              {mode === "create" ? t("lock.create.cardTitle") : t("lock.unlock.cardTitle")}
+        <Card className="premium-card w-full border-border/80 transition-all duration-300">
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-xl lg:text-2xl">
+              {mode === "create" ? t("lock.create.title") : t("lock.unlock.title")}
             </CardTitle>
-            <CardDescription>
-              {mode === "create" ? t("lock.create.helper") : t("lock.unlock.helper")}
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {currentErrorKey ? (
@@ -180,7 +165,7 @@ export function LockScreen({ hasVault }: LockScreenProps) {
 
             {mode === "create" ? (
               <form action={createAction} className="space-y-4">
-                <label className="space-y-2 text-sm">
+                <label className="space-y-2 pb-2 text-sm">
                   <span className="text-muted-foreground">{t("lock.masterPasswordLabel")}</span>
                   <div className="relative">
                     <Input
@@ -238,9 +223,7 @@ export function LockScreen({ hasVault }: LockScreenProps) {
                     </button>
                   </div>
                   {createState.fieldErrors?.confirmPassword ? (
-                    <p className="text-xs text-rose-600 dark:text-rose-300">
-                      {t(createState.fieldErrors.confirmPassword)}
-                    </p>
+                    <p className="text-xs text-rose-600 dark:text-rose-300">{t(createState.fieldErrors.confirmPassword)}</p>
                   ) : null}
                 </label>
 
@@ -248,7 +231,7 @@ export function LockScreen({ hasVault }: LockScreenProps) {
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="mt-2 w-full"
                   disabled={!createIsValid || createPending || isCompletingUnlock}
                 >
                   {createPending || isCompletingUnlock ? t("lock.create.submitting") : t("lock.create.submit")}
@@ -258,7 +241,7 @@ export function LockScreen({ hasVault }: LockScreenProps) {
 
             {mode !== "create" ? (
               <form action={unlockAction} className="space-y-4">
-                <label className="space-y-2 text-sm">
+                <label className="space-y-2 pb-2 text-sm">
                   <span className="text-muted-foreground">{t("lock.masterPasswordLabel")}</span>
                   <div className="relative">
                     <Input
@@ -287,7 +270,7 @@ export function LockScreen({ hasVault }: LockScreenProps) {
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="mt-2 w-full"
                   disabled={!unlockIsValid || unlockPending || isCompletingUnlock}
                 >
                   {unlockPending || isCompletingUnlock ? t("lock.unlock.submitting") : t("lock.unlock.submit")}

@@ -31,7 +31,13 @@
   },
   "topbar": {
     "quickSearch": "Tezkor qidiruv",
-    "commandHint": "Ctrl+K ni bosing"
+    "commandHint": "Ctrl+K ni bosing",
+    "vaultEncrypted": "Vault shifrlangan",
+    "noPlainText": "Oddiy matnda saqlanmaydi",
+    "autoLockEnabled": "Auto-lock yoqilgan",
+    "autoLockManual": "Faqat qo'lda qulflash",
+    "lastUnlocked": "Oxirgi unlock: {value}",
+    "noUnlockYet": "Hozircha unlock qaydi yo'q"
   },
   "lock": {
     "masterPasswordLabel": "Master parol",
@@ -119,16 +125,28 @@
     },
     "empty": {
       "title": "Vault birinchi credential uchun tayyor",
-      "description": "Birinchi umumiy akkauntni qo'shing, kuchli parol yarating va credentiallarni teglar bilan tartiblang."
+      "description": "Birinchi umumiy akkauntni qo'shing, kuchli parol yarating va credentiallarni teglar bilan tartiblang.",
+      "primaryCta": "Birinchi credentialni qo'shish",
+      "secondaryHint": "Tez ko'rsatma kerakmi? Demo yozuvlarni yuklab, barcha funksiyalarni sinab ko'ring.",
+      "tipGenerator": "Kuchli parolni bir klikda yaratish uchun ichki generatorni ishlating.",
+      "tipTags": "Jamoa kirishini tartiblash uchun IT, Sales yoki Clients kabi teglardan foydalaning."
+    },
+    "demo": {
+      "load": "Demo ma'lumotlarni yuklash",
+      "loading": "Demo ma'lumotlar yuklanmoqda...",
+      "loaded": "Demo ma'lumotlar yuklandi. Vault tayyor.",
+      "loadFailed": "Demo ma'lumotlarni yuklab bo'lmadi."
     },
     "list": {
       "decrypting": "Credentiallar xavfsiz xotirada decrypt qilinmoqda...",
       "noMatches": "Joriy qidiruv va filterlarga mos credential topilmadi.",
+      "clearFilters": "Filterlarni tozalash",
       "updatedAt": "Yangilangan: {date}"
     },
     "filters": {
       "allTags": "Barcha teglar",
       "allStrength": "Barcha kuchlilik",
+      "allIssues": "Barcha muammolar",
       "reusedOnly": "Faqat takrorlangan",
       "favoritesOnly": "Faqat sevimlilar"
     },
@@ -268,19 +286,111 @@
   },
   "settings": {
     "title": "Sozlamalar",
-    "subtitle": "Ish maydoni uchun xavfsizlik, sessiya xulqi va interfeys boshqaruvlari.",
-    "sections": {
-      "workspace": "Ish maydoni profili",
-      "security": "Xavfsizlik va sessiya",
-      "preferences": "Interfeys sozlamalari"
+    "subtitle": "Jamoa vaulti uchun xavfsizlik, afzalliklar va backup boshqaruvlari.",
+    "security": {
+      "title": "Xavfsizlik",
+      "description": "Master parol, auto-lock va Security Health tekshiruvlarini boshqaring.",
+      "masterPassword": {
+        "title": "Master parolni almashtirish",
+        "description": "Avval joriy parol tekshiriladi, keyin barcha credentiallar yangi kalit bilan qayta shifrlanadi.",
+        "current": "Joriy master parol",
+        "next": "Yangi master parol",
+        "confirm": "Yangi parolni tasdiqlang",
+        "strength": "Kuchlilik",
+        "submit": "Master parolni yangilash",
+        "submitting": "Parol yangilanmoqda...",
+        "success": "Master parol xavfsiz yangilandi.",
+        "errors": {
+          "invalidInput": "Belgilangan maydonlarni to'g'rilang.",
+          "currentRequired": "Joriy master parol majburiy.",
+          "currentInvalid": "Joriy master parol noto'g'ri.",
+          "invalidRotationData": "Kalit rotatsiyasi ma'lumotlari tayyorlanmadi.",
+          "rotationDataMismatch": "Rotatsiya paytida vault ma'lumotlari o'zgargan. Yangilab qayta urinib ko'ring.",
+          "unexpected": "Master parolni almashtirishda kutilmagan xatolik yuz berdi."
+        }
+      },
+      "autoLock": {
+        "title": "Auto-lock",
+        "description": "Ushbu qurilmada lock siyosati qo'llanadi va faollikda qayta hisoblanadi.",
+        "lockedToast": "Auto-lock siyosati bo'yicha vault qulflandi.",
+        "options": {
+          "5m": "5 daqiqadan keyin qulflash",
+          "15m": "15 daqiqadan keyin qulflash",
+          "30m": "30 daqiqadan keyin qulflash",
+          "on-close": "Tab yopilganda qulflash",
+          "manual": "Faqat qo'lda"
+        }
+      },
+      "health": {
+        "title": "Security Health",
+        "description": "Vault unlock holatida credentiallar bo'yicha amaliy xavf ko'rsatkichlari.",
+        "metrics": {
+          "total": "Jami credential",
+          "reused": "Takrorlangan parollar",
+          "weak": "Kuchsiz parollar",
+          "stale": "Eskirgan credentiallar",
+          "missingUrl": "URL yo'q credentiallar",
+          "missingNotes": "Izohsiz credentiallar"
+        },
+        "issues": {
+          "reused": "Takror parol muammolari",
+          "weak": "Kuchsiz parol muammolari",
+          "stale": "Eskirgan credential muammolari",
+          "missingUrl": "URL yo'q credentiallar",
+          "missingNotes": "Izohsiz credentiallar"
+        },
+        "issuesDescriptions": {
+          "reused": "Bir xil parol bir nechta credentialda ishlatilgan.",
+          "weak": "Bu parollarni topish osonroq, ularni tezroq almashtirish kerak.",
+          "stale": "Bu credentiallar uzoq vaqtdan beri yangilanmagan.",
+          "missingUrl": "Login URL yo'qligi kirish va tekshiruvni sekinlashtiradi.",
+          "missingNotes": "Izohlar bo'lmasa jamoa uchun xavfsiz handoff qiyinlashadi."
+        },
+        "issuesClear": "Muammo yo'q",
+        "viewAffected": "Ta'sirlangan credentiallarni ko'rish"
+      }
     },
-    "items": {
-      "autoLock": "Auto-lock taymauti",
-      "exportGuard": "Eksportdan oldin unlock talab qilish",
-      "hideSecrets": "Nozik qiymatlarni default holatda yashirish",
-      "locale": "Ish maydoni standart tili",
-      "theme": "Mavzu rejimi",
-      "auditRetention": "Audit log saqlash muddati"
+    "preferences": {
+      "title": "Afzalliklar",
+      "description": "Til, mavzu, vault ko'rinishi va generator defaultlarini moslang.",
+      "language": "Standart til",
+      "theme": "Standart mavzu",
+      "defaultView": {
+        "title": "Vault zichligi",
+        "list": "Qulay",
+        "compact": "Kompakt"
+      },
+      "generator": {
+        "title": "Generator defaultlari",
+        "length": "Standart uzunlik"
+      }
+    },
+    "data": {
+      "title": "Ma'lumotlar va backup",
+      "description": "Decrypt qilingan ma'lumotni faqat zarur paytda eksport qiling va xavfsiz saqlang.",
+      "export": {
+        "warningTitle": "Nozik eksport ogohlantirishi",
+        "warningDescription": "Bu faylda nozik ma'lumotlar bo'ladi. Uni xavfsiz saqlang va ishlatgandan keyin o'chiring.",
+        "json": "JSON eksport",
+        "csv": "CSV eksport",
+        "confirmTitle": "Xavfsiz eksportni tasdiqlang",
+        "confirmDescription": "Siz decrypt qilingan vault credentiallarini eksport qilmoqchisiz.",
+        "confirm": "Eksportni yuklab olish",
+        "exporting": "Eksport tayyorlanmoqda...",
+        "success": "Vault eksporti yaratildi.",
+        "empty": "Eksport uchun credential topilmadi."
+      }
+    },
+    "about": {
+      "title": "Ma'lumot",
+      "description": "Joriy vault sessiyasi uchun ishonch va holat ko'rsatkichlari.",
+      "cues": {
+        "encrypted": "Vault shifrlash faol.",
+        "autoLock": "Auto-lock rejimi: {mode}",
+        "lastUnlocked": "Oxirgi unlock vaqti: {value}",
+        "neverUnlocked": "Bu sessiyada unlock vaqti qayd qilinmagan."
+      },
+      "vaultInfo": "Vault: {name} · Kalit versiyasi: {version}"
     }
   },
   "loading": {

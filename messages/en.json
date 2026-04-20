@@ -31,7 +31,13 @@
   },
   "topbar": {
     "quickSearch": "Quick search",
-    "commandHint": "Press Ctrl+K"
+    "commandHint": "Press Ctrl+K",
+    "vaultEncrypted": "Vault encrypted",
+    "noPlainText": "No plain-text storage",
+    "autoLockEnabled": "Auto-lock enabled",
+    "autoLockManual": "Manual lock only",
+    "lastUnlocked": "Last unlocked: {value}",
+    "noUnlockYet": "No unlock activity yet"
   },
   "lock": {
     "masterPasswordLabel": "Master password",
@@ -119,16 +125,28 @@
     },
     "empty": {
       "title": "Your vault is ready for the first credential",
-      "description": "Add your first shared account, generate a strong password, and organize credentials with tags for fast team lookup."
+      "description": "Add your first shared account, generate a strong password, and organize credentials with tags for fast team lookup.",
+      "primaryCta": "Add your first credential",
+      "secondaryHint": "Need a quick walkthrough? Load secure demo entries and explore the full experience.",
+      "tipGenerator": "Use the built-in generator to create strong passwords in one click.",
+      "tipTags": "Use tags like IT, Sales, or Clients to keep team access organized."
+    },
+    "demo": {
+      "load": "Load demo data",
+      "loading": "Loading demo data...",
+      "loaded": "Demo data loaded. Your vault is ready.",
+      "loadFailed": "Could not load demo data."
     },
     "list": {
       "decrypting": "Decrypting credentials in secure memory...",
       "noMatches": "No credentials match your current search and filters.",
+      "clearFilters": "Clear filters",
       "updatedAt": "Updated {date}"
     },
     "filters": {
       "allTags": "All tags",
       "allStrength": "All strengths",
+      "allIssues": "All issues",
       "reusedOnly": "Only reused",
       "favoritesOnly": "Only favorites"
     },
@@ -268,19 +286,111 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Workspace controls for security, session behavior, and interface preferences.",
-    "sections": {
-      "workspace": "Workspace profile",
-      "security": "Security and session",
-      "preferences": "Interface preferences"
+    "subtitle": "Security, preferences, backup, and trust controls for your team vault.",
+    "security": {
+      "title": "Security",
+      "description": "Manage master password, auto-lock, and Security Health checks.",
+      "masterPassword": {
+        "title": "Change master password",
+        "description": "Current password is verified, then all credentials are re-encrypted with the new derived key.",
+        "current": "Current master password",
+        "next": "New master password",
+        "confirm": "Confirm new master password",
+        "strength": "Strength",
+        "submit": "Update master password",
+        "submitting": "Updating password...",
+        "success": "Master password updated securely.",
+        "errors": {
+          "invalidInput": "Please correct the highlighted fields.",
+          "currentRequired": "Current master password is required.",
+          "currentInvalid": "Current master password is incorrect.",
+          "invalidRotationData": "Could not prepare key rotation data.",
+          "rotationDataMismatch": "Vault data changed during rotation. Refresh and try again.",
+          "unexpected": "Unexpected error while changing master password."
+        }
+      },
+      "autoLock": {
+        "title": "Auto-lock",
+        "description": "Lock behavior is applied on this device and resets on activity.",
+        "lockedToast": "Vault locked due to auto-lock policy.",
+        "options": {
+          "5m": "Lock after 5 minutes",
+          "15m": "Lock after 15 minutes",
+          "30m": "Lock after 30 minutes",
+          "on-close": "Lock on tab close",
+          "manual": "Manual only"
+        }
+      },
+      "health": {
+        "title": "Security Health",
+        "description": "Practical risk indicators across credentials while vault is unlocked.",
+        "metrics": {
+          "total": "Total credentials",
+          "reused": "Reused passwords",
+          "weak": "Weak passwords",
+          "stale": "Old credentials",
+          "missingUrl": "Missing URL",
+          "missingNotes": "Missing notes"
+        },
+        "issues": {
+          "reused": "Reused password issues",
+          "weak": "Weak password issues",
+          "stale": "Stale credential issues",
+          "missingUrl": "Credentials missing URL",
+          "missingNotes": "Credentials missing notes"
+        },
+        "issuesDescriptions": {
+          "reused": "The same password appears across multiple credentials.",
+          "weak": "These passwords are easier to guess and should be rotated.",
+          "stale": "These credentials have not been updated in a long time.",
+          "missingUrl": "Missing login URLs slows down access and verification.",
+          "missingNotes": "Missing notes can reduce context for secure team handoff."
+        },
+        "issuesClear": "No issues",
+        "viewAffected": "View affected credentials"
+      }
     },
-    "items": {
-      "autoLock": "Auto-lock timeout",
-      "exportGuard": "Require unlock before export",
-      "hideSecrets": "Hide sensitive values by default",
-      "locale": "Default workspace language",
-      "theme": "Theme mode",
-      "auditRetention": "Audit log retention"
+    "preferences": {
+      "title": "Preferences",
+      "description": "Customize language, theme, vault view, and generator defaults.",
+      "language": "Default language",
+      "theme": "Default theme",
+      "defaultView": {
+        "title": "Default vault density",
+        "list": "Comfortable",
+        "compact": "Compact"
+      },
+      "generator": {
+        "title": "Generator defaults",
+        "length": "Default length"
+      }
+    },
+    "data": {
+      "title": "Data & Backup",
+      "description": "Export decrypted data only when necessary and store it securely.",
+      "export": {
+        "warningTitle": "Sensitive export warning",
+        "warningDescription": "This file will contain sensitive data. Store it securely and delete it after use.",
+        "json": "Export JSON",
+        "csv": "Export CSV",
+        "confirmTitle": "Confirm secure export",
+        "confirmDescription": "You are about to export decrypted vault credentials.",
+        "confirm": "Download export",
+        "exporting": "Preparing export...",
+        "success": "Vault export generated.",
+        "empty": "No credentials available to export."
+      }
+    },
+    "about": {
+      "title": "About",
+      "description": "Trust and operational cues for this vault session.",
+      "cues": {
+        "encrypted": "Vault encryption is active.",
+        "autoLock": "Auto-lock mode: {mode}",
+        "lastUnlocked": "Last unlocked at {value}",
+        "neverUnlocked": "No unlock timestamp recorded in this session."
+      },
+      "vaultInfo": "Vault: {name} · Key version: {version}"
     }
   },
   "loading": {

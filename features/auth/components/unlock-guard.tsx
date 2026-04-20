@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { clearVaultOnRefreshOrClose, clearVaultUnlocked, isVaultUnlocked } from "@/lib/auth/vault-session";
+import { clearVaultUnlocked, isVaultUnlocked } from "@/lib/auth/vault-session";
 import { clearActiveVaultKey, getActiveVaultKey } from "@/lib/crypto/key-store";
 
 type UnlockGuardProps = {
@@ -27,10 +27,7 @@ export function UnlockGuard({ children }: UnlockGuardProps) {
       return;
     }
 
-    const cleanup = clearVaultOnRefreshOrClose();
     setReady(true);
-
-    return cleanup;
   }, [router]);
 
   if (!ready) {

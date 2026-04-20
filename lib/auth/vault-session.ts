@@ -1,4 +1,5 @@
 const VAULT_UNLOCKED_STORAGE_KEY = "cipherteams.vault.unlocked";
+const VAULT_LAST_UNLOCKED_STORAGE_KEY = "cipherteams.vault.last-unlocked-at";
 
 function hasWindow() {
   return typeof window !== "undefined";
@@ -7,6 +8,7 @@ function hasWindow() {
 export function markVaultUnlocked() {
   if (!hasWindow()) return;
   window.sessionStorage.setItem(VAULT_UNLOCKED_STORAGE_KEY, "1");
+  window.sessionStorage.setItem(VAULT_LAST_UNLOCKED_STORAGE_KEY, new Date().toISOString());
 }
 
 export function isVaultUnlocked() {
@@ -17,6 +19,11 @@ export function isVaultUnlocked() {
 export function clearVaultUnlocked() {
   if (!hasWindow()) return;
   window.sessionStorage.removeItem(VAULT_UNLOCKED_STORAGE_KEY);
+}
+
+export function getLastUnlockedAt() {
+  if (!hasWindow()) return null;
+  return window.sessionStorage.getItem(VAULT_LAST_UNLOCKED_STORAGE_KEY);
 }
 
 export function clearVaultOnRefreshOrClose() {

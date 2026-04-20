@@ -1,26 +1,39 @@
-# CipherTeams Foundation
+# CipherTeams
 
-Premium team password manager foundation built with Next.js App Router, TypeScript, Tailwind, shadcn/ui composition, next-themes, next-intl, Prisma, and PostgreSQL.
+CipherTeams is a production-style team password manager for operations, admin, and IT teams that share critical business credentials securely. It combines a premium UX with vault locking, client-side encryption flows, credential lifecycle tooling, security insights, and export controls.
 
-## Current scope
+## Product brief
 
-This stage delivers a working secure vault baseline:
+CipherTeams is built for teams that need one trusted place for shared access without sacrificing security posture. It solves scattered password sharing by combining encrypted vault workflows, practical security health checks, and fast day-to-day credential operations. The product stands out through a polished UX, multilingual support, and trust cues that make security visible without creating noise. In v2, it will extend into richer audit trails, role-based access controls, and stronger policy enforcement.
 
-- App shell (sidebar + topbar + mobile nav)
-- Routes:
-  - `/` (redirects to `/lock`)
-  - `/lock`
-  - `/vault`
-  - `/vault/new`
-  - `/vault/[id]`
-  - `/settings`
-- Premium UI primitives and reusable composition
-- i18n with JSON dictionaries (`uz`, `ru`, `en`) via `next-intl`
-- Dark/light/system theme support via `next-themes`
-- Master password onboarding and lock/unlock flow
-- Client-side key derivation + AES-GCM encryption helpers
-- Encrypted credential CRUD (create/read/update/delete) with Prisma + PostgreSQL
-- Vault overview with search/filter/sort, copy actions, generator, strength labels, and reused-password indicators
+## Feature set
+
+- Lock/unlock flow with master password onboarding
+- In-memory vault key model and encrypted credential storage flow
+- Credential CRUD (service, URL, username, password, notes, tags)
+- Vault overview with search, filters, sorting, copy/reveal actions
+- Password strength indicators and generator
+- Reused password detection during unlocked session
+- Security Health metrics (reused, weak, stale, missing URL/notes)
+- Settings:
+  - Master password rotation
+  - Auto-lock modes
+  - Secure export (JSON/CSV + confirmation)
+  - User preferences (theme, locale, density, generator defaults)
+- Demo-ready vault onboarding (`Load demo data` from empty state)
+- i18n via JSON dictionaries (`uz`, `ru`, `en`)
+- Dark/light/system theming
+
+## Tech stack
+
+- Next.js App Router (v15+ compatible architecture)
+- TypeScript
+- Tailwind CSS
+- shadcn/ui composition
+- next-intl
+- next-themes
+- Prisma ORM
+- PostgreSQL
 
 ## Project structure
 
@@ -31,111 +44,41 @@ app/
     vault/
     settings/
   lock/
-  layout.tsx
   page.tsx
+  layout.tsx
 
 components/
   layout/
   shared/
   ui/
-  providers.tsx
 
 features/
   auth/
+  export/
+  password-generator/
+  preferences/
+  security-health/
   settings/
   vault/
 
-hooks/
 lib/
+  auth/
+  crypto/
   db/
   i18n/
+
 messages/
   en.json
   ru.json
   uz.json
+
 prisma/
 types/
 ```
 
-## i18n setup
+## Local setup
 
-- Locale source: `pm-locale` cookie
-- Default locale: `uz`
-- Message files: `messages/{uz,ru,en}.json`
-- Runtime config: `lib/i18n/request.ts`
-
-## Master password and lock flow
-
-- First visit (`/lock`) with no vault:
-  - User creates master password + confirmation
-  - Password is validated and hashed with `bcrypt`
-  - Only hash and KDF metadata are stored in database
-  - Initial team + primary vault are created
-- Unlock:
-  - Master password is verified against hash
-  - AES key is derived via PBKDF2 and stored only in in-memory key store
-  - Unlock state is stored in `sessionStorage`
-- Lock:
-  - Manual lock button clears in-memory key + session flag and redirects to `/lock`
-  - Refresh lock is enforced by clearing session on reload/close events
-
-## Crypto utilities
-
-- `lib/crypto/vault-crypto.ts`
-  - `deriveKey(masterPassword, {keyDerivationSalt, keyDerivationIterations})`
-  - `encrypt(data, key)` (AES-GCM)
-  - `decrypt(payload, key)` (AES-GCM)
-- `lib/crypto/key-store.ts`
-  - In-memory key storage only, never persisted
-
-## Docker
-
-### Build image
-
-```bash
-docker build -t cipherteams-web:local .
-```
-
-### Run full stack (app + PostgreSQL)
-
-```bash
-docker compose up --build
-```
-
-App runs on `http://localhost:3000`, Postgres on `localhost:5432`.
-
-### Health endpoint
-
-`GET /api/health` is available for container and orchestration health probes.
-
-## CI/CD
-
-GitHub Actions workflows are included:
-
-- `CI` (`.github/workflows/ci.yml`)
-  - Runs on PRs and pushes to `main`
-  - Executes `npm ci`, `prisma:generate`, `lint`, `build`
-- `CD` (`.github/workflows/cd.yml`)
-  - Runs on pushes to `main`, version tags (`v*`) and manual dispatch
-  - Re-verifies quality gates
-  - Builds and pushes Docker image to GHCR: `ghcr.io/<owner>/<repo>`
-
-## Prisma draft models
-
-- `User`
-- `Team`
-- `TeamMembership`
-- `Vault`
-- `Credential`
-- `CredentialTag`
-- `CredentialTagOnRecord`
-- `VaultPreference`
-- `SecurityEvent`
-- `VaultInsightSnapshot`
-
-## Setup
-
-1. Copy env file:
+1. Copy environment values:
 
 ```bash
 cp .env.example .env
@@ -153,16 +96,49 @@ npm install
 npm run prisma:generate
 ```
 
-4. Push Prisma schema:
+4. Apply schema to your database:
 
 ```bash
 npm run prisma:push
 ```
 
-> After pulling latest changes, run `npm run prisma:push` again because `Credential` fields were extended (`lastUsedAt`, `isFavorite`, `isPinned`).
-
-5. Start development server:
+5. Start the app:
 
 ```bash
 npm run dev
 ```
+
+## Environment variables
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/cipherteams?schema=public"
+```
+
+## Demo flow
+
+1. Open `/lock` and create a master password.
+2. Enter the vault.
+3. If the vault is empty, use **Load demo data** to instantly populate realistic sample credentials (including weak/reused/missing-field cases for Security Health demos).
+
+## Security model (current scope)
+
+- Master password is hashed in DB (bcrypt), not stored in plaintext.
+- Vault key is derived client-side and kept in memory.
+- Sensitive credential fields are encrypted before persistence.
+- Reused-password analysis is performed only during unlocked runtime evaluation.
+
+## Docker
+
+```bash
+docker build -t cipherteams-web:local .
+docker compose up --build
+```
+
+## CI/CD
+
+- `.github/workflows/ci.yml` for quality checks on pushes/PRs
+- `.github/workflows/cd.yml` for container build/publish flow
+
+## If I had 3 more days
+
+I would add team-level roles and vault permissions, improve session hardening with device-bound unlock policies, and ship a richer Security Health remediation flow that supports bulk password rotation tasks with guided checklists. I would also complete a full test matrix for encryption boundaries and edge-case recovery paths, then finalize performance profiling for large vaults with virtualization and server-side pagination.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Copy, RefreshCw, Sparkles } from "lucide-react";
+import { Check, Copy, RefreshCw, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -18,14 +18,17 @@ import { PasswordStrengthPill } from "@/features/vault/components/password-stren
 
 type PasswordGeneratorPanelProps = {
   onApply: (password: string) => void;
+  initialOptions?: PasswordGeneratorOptions;
+  onOptionsChange?: (nextOptions: PasswordGeneratorOptions) => void;
 };
 
-export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps) {
+export function PasswordGeneratorPanel({ onApply, initialOptions, onOptionsChange }: PasswordGeneratorPanelProps) {
   const t = useTranslations();
   const copy = useCopy();
 
-  const [options, setOptions] = useState<PasswordGeneratorOptions>(defaultPasswordGeneratorOptions);
-  const [password, setPassword] = useState(() => generatePassword(defaultPasswordGeneratorOptions));
+  const [options, setOptions] = useState<PasswordGeneratorOptions>(initialOptions ?? defaultPasswordGeneratorOptions);
+  const [password, setPassword] = useState(() => generatePassword(initialOptions ?? defaultPasswordGeneratorOptions));
+  const [copied, setCopied] = useState(false);
 
   const strength = useMemo(
     () => evaluateCredentialPasswordStrength(password),
@@ -39,6 +42,11 @@ export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps)
   useEffect(() => {
     setPassword(generatePassword(options));
   }, [options]);
+
+  useEffect(() => {
+    if (!initialOptions) return;
+    setOptions(initialOptions);
+  }, [initialOptions]);
 
   return (
     <Card className="premium-card">
@@ -57,10 +65,15 @@ export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps)
               type="button"
               variant="secondary"
               size="icon"
-              onClick={() => copy(password, t("vault.toasts.passwordCopied"), t("vault.toasts.copyFailed"))}
+              onClick={async () => {
+                const ok = await copy(password, t("vault.toasts.passwordCopied"), t("vault.toasts.copyFailed"));
+                if (!ok) return;
+                setCopied(true);
+                window.setTimeout(() => setCopied(false), 1400);
+              }}
               aria-label={t("vault.actions.copyGenerated")}
             >
-              <Copy className="size-4" />
+              {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             </Button>
           </div>
           <PasswordStrengthPill strength={strength.label} label={t(`vault.strength.${strength.label}`)} />
@@ -76,7 +89,13 @@ export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps)
             min={8}
             max={64}
             value={options.length}
-            onChange={(event) => setOptions((prev) => ({ ...prev, length: Number(event.target.value) }))}
+            onChange={(event) =>
+              setOptions((prev) => {
+                const next = { ...prev, length: Number(event.target.value) };
+                onOptionsChange?.(next);
+                return next;
+              })
+            }
             className="w-full accent-primary"
           />
         </div>
@@ -86,7 +105,13 @@ export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps)
             <input
               type="checkbox"
               checked={options.uppercase}
-              onChange={(event) => setOptions((prev) => ({ ...prev, uppercase: event.target.checked }))}
+              onChange={(event) =>
+                setOptions((prev) => {
+                  const next = { ...prev, uppercase: event.target.checked };
+                  onOptionsChange?.(next);
+                  return next;
+                })
+              }
             />
             <span>{t("vault.generator.options.uppercase")}</span>
           </label>
@@ -94,7 +119,13 @@ export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps)
             <input
               type="checkbox"
               checked={options.numbers}
-              onChange={(event) => setOptions((prev) => ({ ...prev, numbers: event.target.checked }))}
+              onChange={(event) =>
+                setOptions((prev) => {
+                  const next = { ...prev, numbers: event.target.checked };
+                  onOptionsChange?.(next);
+                  return next;
+                })
+              }
             />
             <span>{t("vault.generator.options.numbers")}</span>
           </label>
@@ -102,7 +133,13 @@ export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps)
             <input
               type="checkbox"
               checked={options.symbols}
-              onChange={(event) => setOptions((prev) => ({ ...prev, symbols: event.target.checked }))}
+              onChange={(event) =>
+                setOptions((prev) => {
+                  const next = { ...prev, symbols: event.target.checked };
+                  onOptionsChange?.(next);
+                  return next;
+                })
+              }
             />
             <span>{t("vault.generator.options.symbols")}</span>
           </label>
@@ -110,7 +147,13 @@ export function PasswordGeneratorPanel({ onApply }: PasswordGeneratorPanelProps)
             <input
               type="checkbox"
               checked={options.avoidAmbiguous}
-              onChange={(event) => setOptions((prev) => ({ ...prev, avoidAmbiguous: event.target.checked }))}
+              onChange={(event) =>
+                setOptions((prev) => {
+                  const next = { ...prev, avoidAmbiguous: event.target.checked };
+                  onOptionsChange?.(next);
+                  return next;
+                })
+              }
             />
             <span>{t("vault.generator.options.avoidAmbiguous")}</span>
           </label>

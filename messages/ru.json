@@ -31,7 +31,13 @@
   },
   "topbar": {
     "quickSearch": "Быстрый поиск",
-    "commandHint": "Нажмите Ctrl+K"
+    "commandHint": "Нажмите Ctrl+K",
+    "vaultEncrypted": "Vault зашифрован",
+    "noPlainText": "Без хранения в открытом виде",
+    "autoLockEnabled": "Auto-lock включен",
+    "autoLockManual": "Только ручная блокировка",
+    "lastUnlocked": "Последний unlock: {value}",
+    "noUnlockYet": "Активность unlock пока не зафиксирована"
   },
   "lock": {
     "masterPasswordLabel": "Мастер-пароль",
@@ -119,16 +125,28 @@
     },
     "empty": {
       "title": "Vault готов к первой записи",
-      "description": "Добавьте первый общий аккаунт, сгенерируйте сильный пароль и разложите доступы по тегам."
+      "description": "Добавьте первый общий аккаунт, сгенерируйте сильный пароль и разложите доступы по тегам.",
+      "primaryCta": "Добавить первый credential",
+      "secondaryHint": "Нужен быстрый обзор? Загрузите demo-данные и посмотрите весь сценарий работы.",
+      "tipGenerator": "Используйте встроенный генератор, чтобы сразу создать сильный пароль.",
+      "tipTags": "Используйте теги вроде IT, Sales или Clients для удобной организации доступов."
+    },
+    "demo": {
+      "load": "Загрузить demo-данные",
+      "loading": "Загрузка demo-данных...",
+      "loaded": "Demo-данные загружены. Vault готов к работе.",
+      "loadFailed": "Не удалось загрузить demo-данные."
     },
     "list": {
       "decrypting": "Расшифровка credentials в защищенной памяти...",
       "noMatches": "По текущему поиску и фильтрам ничего не найдено.",
+      "clearFilters": "Сбросить фильтры",
       "updatedAt": "Обновлено {date}"
     },
     "filters": {
       "allTags": "Все теги",
       "allStrength": "Любая сложность",
+      "allIssues": "Все проблемы",
       "reusedOnly": "Только повторы",
       "favoritesOnly": "Только избранные"
     },
@@ -268,19 +286,111 @@
   },
   "settings": {
     "title": "Настройки",
-    "subtitle": "Параметры пространства: безопасность, поведение сессий и интерфейс.",
-    "sections": {
-      "workspace": "Профиль пространства",
-      "security": "Безопасность и сессия",
-      "preferences": "Параметры интерфейса"
+    "subtitle": "Безопасность, предпочтения, backup и сигналы доверия для командного vault.",
+    "security": {
+      "title": "Безопасность",
+      "description": "Управляйте master-паролем, auto-lock и проверками Security Health.",
+      "masterPassword": {
+        "title": "Смена master-пароля",
+        "description": "Сначала проверяется текущий пароль, затем credentials заново шифруются новым ключом.",
+        "current": "Текущий master-пароль",
+        "next": "Новый master-пароль",
+        "confirm": "Подтвердите новый пароль",
+        "strength": "Надежность",
+        "submit": "Обновить master-пароль",
+        "submitting": "Обновление пароля...",
+        "success": "Master-пароль безопасно обновлен.",
+        "errors": {
+          "invalidInput": "Проверьте поля формы.",
+          "currentRequired": "Текущий master-пароль обязателен.",
+          "currentInvalid": "Текущий master-пароль неверен.",
+          "invalidRotationData": "Не удалось подготовить данные ротации ключа.",
+          "rotationDataMismatch": "Данные vault изменились во время ротации. Обновите страницу и повторите.",
+          "unexpected": "Непредвиденная ошибка при смене master-пароля."
+        }
+      },
+      "autoLock": {
+        "title": "Auto-lock",
+        "description": "Политика блокировки применяется на этом устройстве и сбрасывается при активности.",
+        "lockedToast": "Vault заблокирован по политике auto-lock.",
+        "options": {
+          "5m": "Блокировать через 5 минут",
+          "15m": "Блокировать через 15 минут",
+          "30m": "Блокировать через 30 минут",
+          "on-close": "Блокировать при закрытии вкладки",
+          "manual": "Только вручную"
+        }
+      },
+      "health": {
+        "title": "Security Health",
+        "description": "Практические индикаторы риска по credentials в unlocked-сессии.",
+        "metrics": {
+          "total": "Всего credentials",
+          "reused": "Повтор паролей",
+          "weak": "Слабые пароли",
+          "stale": "Устаревшие credentials",
+          "missingUrl": "Без URL",
+          "missingNotes": "Без заметок"
+        },
+        "issues": {
+          "reused": "Проблемы повторов паролей",
+          "weak": "Проблемы слабых паролей",
+          "stale": "Проблемы устаревших credentials",
+          "missingUrl": "Credentials без URL",
+          "missingNotes": "Credentials без заметок"
+        },
+        "issuesDescriptions": {
+          "reused": "Один и тот же пароль используется в нескольких записях.",
+          "weak": "Эти пароли проще подобрать, их стоит заменить в первую очередь.",
+          "stale": "Эти credentials давно не обновлялись.",
+          "missingUrl": "Отсутствие URL замедляет вход и проверку доступа.",
+          "missingNotes": "Без заметок команде сложнее передавать контекст безопасно."
+        },
+        "issuesClear": "Проблем нет",
+        "viewAffected": "Открыть затронутые credentials"
+      }
     },
-    "items": {
-      "autoLock": "Таймаут авто-блокировки",
-      "exportGuard": "Требовать unlock перед экспортом",
-      "hideSecrets": "Скрывать чувствительные значения по умолчанию",
-      "locale": "Язык пространства по умолчанию",
-      "theme": "Режим темы",
-      "auditRetention": "Хранение аудита"
+    "preferences": {
+      "title": "Предпочтения",
+      "description": "Настройка языка, темы, вида vault и дефолтов генератора.",
+      "language": "Язык по умолчанию",
+      "theme": "Тема по умолчанию",
+      "defaultView": {
+        "title": "Плотность списка vault",
+        "list": "Комфортная",
+        "compact": "Компактная"
+      },
+      "generator": {
+        "title": "Дефолты генератора",
+        "length": "Длина по умолчанию"
+      }
+    },
+    "data": {
+      "title": "Данные и backup",
+      "description": "Экспортируйте расшифрованные данные только при необходимости и храните их безопасно.",
+      "export": {
+        "warningTitle": "Предупреждение о чувствительном экспорте",
+        "warningDescription": "Этот файл содержит чувствительные данные. Храните его безопасно и удалите после использования.",
+        "json": "Экспорт JSON",
+        "csv": "Экспорт CSV",
+        "confirmTitle": "Подтвердите безопасный экспорт",
+        "confirmDescription": "Вы собираетесь экспортировать расшифрованные credentials vault.",
+        "confirm": "Скачать экспорт",
+        "exporting": "Подготовка экспорта...",
+        "success": "Экспорт vault сформирован.",
+        "empty": "Нет credentials для экспорта."
+      }
+    },
+    "about": {
+      "title": "О системе",
+      "description": "Индикаторы доверия и состояния текущей сессии vault.",
+      "cues": {
+        "encrypted": "Шифрование vault активно.",
+        "autoLock": "Режим auto-lock: {mode}",
+        "lastUnlocked": "Последний unlock: {value}",
+        "neverUnlocked": "В этой сессии время unlock не зафиксировано."
+      },
+      "vaultInfo": "Vault: {name} · Версия ключа: {version}"
     }
   },
   "loading": {

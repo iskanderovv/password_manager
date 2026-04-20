@@ -1,42 +1,17 @@
 import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/shared/page-header";
-import { SettingsCard } from "@/components/shared/settings-card";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { preferenceSettingKeys, securitySettingKeys, workspaceSettingKeys } from "@/features/settings/blueprints";
+import { SettingsDashboard } from "@/features/settings/components/settings-dashboard";
+import { getVaultOverviewPayload, getActiveVaultMeta } from "@/features/vault/lib/server-vault";
 
 export default async function SettingsPage() {
   const t = await getTranslations();
+  const [payload, vaultMeta] = await Promise.all([getVaultOverviewPayload(), getActiveVaultMeta()]);
 
   return (
     <div className="space-y-6 lg:space-y-8">
       <PageHeader title={t("settings.title")} subtitle={t("settings.subtitle")} />
-
-      <div className="grid gap-6 xl:grid-cols-3">
-        <SettingsCard
-          title={t("settings.sections.workspace")}
-          items={workspaceSettingKeys.map((key) => t(key))}
-          badgeLabel={t("common.planned")}
-        />
-        <SettingsCard
-          title={t("settings.sections.security")}
-          items={securitySettingKeys.map((key) => t(key))}
-          badgeLabel={t("common.planned")}
-        />
-        <SettingsCard
-          title={t("settings.sections.preferences")}
-          items={preferenceSettingKeys.map((key) => t(key))}
-          badgeLabel={t("common.planned")}
-        />
-      </div>
-
-      <Card className="premium-card">
-        <CardContent className="flex flex-wrap items-center justify-between gap-3 py-5">
-          <p className="text-sm text-muted-foreground">{t("common.uiScaffold")}</p>
-          <Badge variant="secondary">{t("common.planned")}</Badge>
-        </CardContent>
-      </Card>
+      <SettingsDashboard payload={payload} vaultMeta={vaultMeta} />
     </div>
   );
 }

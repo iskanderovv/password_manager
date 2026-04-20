@@ -2,18 +2,20 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { Copy, Eye, EyeOff, Pencil, Plus, ShieldAlert, Star, Trash2 } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, List, Pencil, Plus, Rows3, ShieldAlert, Sparkles, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast-provider";
-import { deleteCredentialAction, toggleFavoriteCredentialAction } from "@/features/vault/actions";
+import { useAppPreferences } from "@/features/preferences/hooks/use-app-preferences";
+import { createCredentialAction, deleteCredentialAction } from "@/features/vault/actions";
+import { evaluateCredentialPasswordStrength } from "@/features/security-health/lib/password-strength";
 import { PasswordStrengthPill } from "@/features/vault/components/password-strength-pill";
 import {
+  buildEncryptedCredentialInput,
   decryptCredentialRecord,
   filterAndSortCredentials,
   getDomain,
@@ -26,13 +28,66 @@ import { getActiveVaultKey } from "@/lib/crypto/key-store";
 
 type VaultOverviewProps = {
   payload: VaultOverviewPayload;
+  initialFilters?: Partial<VaultFilterState>;
 };
 
-export function VaultOverview({ payload }: VaultOverviewProps) {
+const demoCredentials = [
+  {
+    serviceName: "Google Workspace",
+    serviceUrl: "https://admin.google.com",
+    username: "it.admin@acme-team.io",
+    password: "TeamVault!2025",
+    notes: "Primary workspace admin account.",
+    tags: ["IT", "Demo"],
+  },
+  {
+    serviceName: "Figma",
+    serviceUrl: "https://www.figma.com",
+    username: "design.lead@acme-team.io",
+    password: "design123",
+    notes: "Shared product design seat.",
+    tags: ["Design", "Demo"],
+  },
+  {
+    serviceName: "AWS Console",
+    serviceUrl: "https://console.aws.amazon.com",
+    username: "cloud.ops@acme-team.io",
+    password: "CloudOps!9",
+    notes: "Ops account with billing + infra access.",
+    tags: ["DevOps", "Demo"],
+  },
+  {
+    serviceName: "Notion",
+    serviceUrl: "",
+    username: "ops.docs@acme-team.io",
+    password: "KnowledgeBase77",
+    notes: "",
+    tags: ["Operations", "Demo"],
+  },
+  {
+    serviceName: "Slack",
+    serviceUrl: "https://acme-team.slack.com",
+    username: "workspace.owner@acme-team.io",
+    password: "design123",
+    notes: "Reused password intentionally for demo risk signal.",
+    tags: ["Comms", "Demo"],
+  },
+  {
+    serviceName: "CRM System",
+    serviceUrl: "https://crm.acme-team.io",
+    username: "sales.ops@acme-team.io",
+    password: "crm2024",
+    notes: "",
+    tags: ["Sales", "Demo"],
+  },
+] as const;
+
+export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
   const t = useTranslations();
   const router = useRouter();
   const copy = useCopy();
   const { notify } = useToast();
+  const { preferences, setPreferences } = useAppPreferences();
 
   const [isPending, startTransition] = useTransition();
   const [credentials, setCredentials] = useState<DecryptedVaultCredential[]>([]);
@@ -43,6 +98,7 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
   const [revealedIds, setRevealedIds] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DecryptedVaultCredential | null>(null);
+  const [isLoadingDemoData, startLoadingDemoData] = useTransition();
 
   const revealTimeoutsRef = useRef<Record<string, number>>({});
   const copyTimeoutRef = useRef<number | null>(null);
@@ -53,7 +109,9 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
     strength: "all",
     reusedOnly: false,
     favoritesOnly: false,
+    issue: "all",
     sort: "recent",
+    ...initialFilters,
   });
 
   useEffect(() => {
@@ -192,31 +250,16 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
   };
 
   const onToggleFavorite = (credential: DecryptedVaultCredential) => {
-    if (!payload.vaultId) return;
-
-    startTransition(() => {
-      void toggleFavoriteCredentialAction({
-        credentialId: credential.id,
-        vaultId: payload.vaultId,
-        isFavorite: !credential.isFavorite,
-      }).then((ok) => {
-        if (!ok) {
-          notify({ message: t("vault.form.errors.unexpected"), variant: "error" });
-          return;
-        }
-
-        setCredentials((prev) =>
-          prev.map((item) =>
-            item.id === credential.id
-              ? {
-                  ...item,
-                  isFavorite: !item.isFavorite,
-                }
-              : item,
-          ),
-        );
-      });
-    });
+    setCredentials((prev) =>
+      prev.map((item) =>
+        item.id === credential.id
+          ? {
+              ...item,
+              isFavorite: !item.isFavorite,
+            }
+          : item,
+      ),
+    );
   };
 
   const confirmDelete = () => {
@@ -240,11 +283,62 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
     });
   };
 
+  const onLoadDemoData = () => {
+    const keyState = getActiveVaultKey();
+
+    if (!payload.vaultId || !keyState) {
+      notify({ message: t("vault.errors.unlockRequired"), variant: "error" });
+      return;
+    }
+
+    startLoadingDemoData(() => {
+      void Promise.all(
+        demoCredentials.map(async (item) => {
+          const encryptedInput = await buildEncryptedCredentialInput({
+            vaultId: payload.vaultId!,
+            serviceName: item.serviceName,
+            serviceUrl: item.serviceUrl,
+            username: item.username,
+            password: item.password,
+            notes: item.notes,
+            tags: [...item.tags],
+            passwordStrengthScore: evaluateCredentialPasswordStrength(item.password).score,
+            isFavorite: false,
+            isPinned: false,
+            key: keyState.key,
+          });
+
+          return createCredentialAction(encryptedInput);
+        }),
+      )
+        .then((results) => {
+          if (results.some((result) => !result.ok)) {
+            notify({ message: t("vault.demo.loadFailed"), variant: "error" });
+            return;
+          }
+
+          notify({ message: t("vault.demo.loaded"), variant: "success" });
+          router.refresh();
+        })
+        .catch(() => {
+          notify({ message: t("vault.demo.loadFailed"), variant: "error" });
+        });
+    });
+  };
+
   if (isDecrypting) {
     return (
-      <Card className="premium-card">
-        <CardContent className="py-8 text-sm text-muted-foreground">{t("vault.list.decrypting")}</CardContent>
-      </Card>
+      <div className="space-y-3">
+        <Card className="premium-card">
+          <CardContent className="py-8 text-sm text-muted-foreground">{t("vault.list.decrypting")}</CardContent>
+        </Card>
+        <Card className="premium-card animate-pulse">
+          <CardContent className="h-24" />
+        </Card>
+        <Card className="premium-card animate-pulse">
+          <CardContent className="h-24" />
+        </Card>
+      </div>
     );
   }
 
@@ -303,12 +397,14 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
           value={filters.query}
           onChange={(event) => setFilters((prev) => ({ ...prev, query: event.target.value }))}
           placeholder={t("vault.searchPlaceholder")}
+          aria-label={t("topbar.quickSearch")}
         />
 
         <select
           className="h-11 rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
           value={filters.tag}
           onChange={(event) => setFilters((prev) => ({ ...prev, tag: event.target.value }))}
+          aria-label={t("vault.filters.allTags")}
         >
           {tagOptions.map((tag) => (
             <option key={tag} value={tag}>
@@ -326,6 +422,7 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
               strength: event.target.value as VaultFilterState["strength"],
             }))
           }
+          aria-label={t("vault.filters.allStrength")}
         >
           <option value="all">{t("vault.filters.allStrength")}</option>
           <option value="weak">{t("vault.strength.weak")}</option>
@@ -342,10 +439,30 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
               sort: event.target.value as VaultFilterState["sort"],
             }))
           }
+          aria-label={t("vault.sort.recent")}
         >
           <option value="recent">{t("vault.sort.recent")}</option>
           <option value="alphabetical">{t("vault.sort.alphabetical")}</option>
           <option value="weakest">{t("vault.sort.weakest")}</option>
+        </select>
+
+        <select
+          className="h-11 rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
+          value={filters.issue}
+          onChange={(event) =>
+            setFilters((prev) => ({
+              ...prev,
+              issue: event.target.value as VaultFilterState["issue"],
+            }))
+          }
+          aria-label={t("vault.filters.allIssues")}
+        >
+          <option value="all">{t("vault.filters.allIssues")}</option>
+          <option value="reused">{t("vault.insights.reused")}</option>
+          <option value="weak">{t("vault.insights.weak")}</option>
+          <option value="stale">{t("vault.insights.stale")}</option>
+          <option value="missing-url">{t("vault.insights.missingUrl")}</option>
+          <option value="missing-notes">{t("settings.security.health.metrics.missingNotes")}</option>
         </select>
 
         <label className="inline-flex items-center gap-2 rounded-xl border border-border/80 bg-background px-3 py-2 text-sm text-muted-foreground">
@@ -353,6 +470,7 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
             type="checkbox"
             checked={filters.reusedOnly}
             onChange={(event) => setFilters((prev) => ({ ...prev, reusedOnly: event.target.checked }))}
+            aria-label={t("vault.filters.reusedOnly")}
           />
           {t("vault.filters.reusedOnly")}
         </label>
@@ -361,18 +479,74 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
             type="checkbox"
             checked={filters.favoritesOnly}
             onChange={(event) => setFilters((prev) => ({ ...prev, favoritesOnly: event.target.checked }))}
+            aria-label={t("vault.filters.favoritesOnly")}
           />
           {t("vault.filters.favoritesOnly")}
         </label>
+        <div className="inline-flex h-11 items-center gap-1 rounded-xl border border-border/80 bg-background p-1">
+          <button
+            type="button"
+            onClick={() =>
+              setPreferences((current) => ({
+                ...current,
+                defaultVaultView: "list",
+              }))
+            }
+            className={`inline-flex h-9 items-center gap-1 rounded-lg px-2 text-xs ${
+              preferences.defaultVaultView === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+            }`}
+            aria-label={t("settings.preferences.defaultView.list")}
+          >
+            <List className="size-3.5" />
+            {t("settings.preferences.defaultView.list")}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setPreferences((current) => ({
+                ...current,
+                defaultVaultView: "compact",
+              }))
+            }
+            className={`inline-flex h-9 items-center gap-1 rounded-lg px-2 text-xs ${
+              preferences.defaultVaultView === "compact"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground"
+            }`}
+            aria-label={t("settings.preferences.defaultView.compact")}
+          >
+            <Rows3 className="size-3.5" />
+            {t("settings.preferences.defaultView.compact")}
+          </button>
+        </div>
       </section>
 
       {credentials.length === 0 ? (
-        <EmptyState
-          title={t("vault.empty.title")}
-          description={t("vault.empty.description")}
-          action={t("vault.addCredential")}
-          actionHref="/vault/new"
-        />
+        <Card className="premium-card overflow-hidden">
+          <CardContent className="relative space-y-6 py-10">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(21,94,239,0.12),transparent_46%)]" />
+            <div className="relative mx-auto flex max-w-2xl flex-col items-center text-center">
+              <div className="mb-4 inline-flex size-14 items-center justify-center rounded-2xl border border-border/70 bg-background/85">
+                <Sparkles className="size-6 text-primary" />
+              </div>
+              <h3 className="text-2xl font-semibold tracking-tight">{t("vault.empty.title")}</h3>
+              <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t("vault.empty.description")}</p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                <Button asChild>
+                  <Link href="/vault/new">{t("vault.empty.primaryCta")}</Link>
+                </Button>
+                <Button type="button" variant="secondary" onClick={onLoadDemoData} disabled={isLoadingDemoData}>
+                  {isLoadingDemoData ? t("vault.demo.loading") : t("vault.demo.load")}
+                </Button>
+              </div>
+              <p className="mt-4 text-xs text-muted-foreground">{t("vault.empty.secondaryHint")}</p>
+              <div className="mt-3 grid gap-2 text-left text-xs text-muted-foreground sm:grid-cols-2">
+                <p className="rounded-lg border border-border/70 bg-background/70 px-2.5 py-2">{t("vault.empty.tipGenerator")}</p>
+                <p className="rounded-lg border border-border/70 bg-background/70 px-2.5 py-2">{t("vault.empty.tipTags")}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-3">
           {filteredCredentials.map((credential) => {
@@ -381,8 +555,12 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
             const domain = getDomain(credential.serviceUrl);
 
             return (
-              <Card key={credential.id} className="premium-card">
-                <CardContent className="flex flex-col gap-3 py-4 xl:flex-row xl:items-center xl:justify-between">
+              <Card key={credential.id} className="premium-card transition-all duration-200 hover:border-primary/30">
+                <CardContent
+                  className={`flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between ${
+                    preferences.defaultVaultView === "compact" ? "py-3" : "py-4"
+                  }`}
+                >
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <button
@@ -394,7 +572,9 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
                       >
                         <Star className={`size-4 ${credential.isFavorite ? "fill-amber-400 text-amber-400" : ""}`} />
                       </button>
-                      <p className="truncate font-medium">{credential.serviceName}</p>
+                      <p className="truncate font-medium" title={credential.serviceName}>
+                        {credential.serviceName}
+                      </p>
                       {credential.isPinned ? (
                         <span className="rounded-full border border-border/70 bg-muted/40 px-2 py-0.5 text-xs text-muted-foreground">
                           {t("vault.badges.pinned")}
@@ -408,8 +588,14 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                      <span>{credential.username}</span>
-                      {domain ? <span>• {domain}</span> : null}
+                      <span className="max-w-[220px] truncate" title={credential.username}>
+                        {credential.username}
+                      </span>
+                      {domain ? (
+                        <span className="max-w-[180px] truncate" title={domain}>
+                          • {domain}
+                        </span>
+                      ) : null}
                       <span>• {t("vault.list.updatedAt", { date: new Date(credential.updatedAt).toLocaleDateString() })}</span>
                     </div>
 
@@ -438,11 +624,11 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <Button type="button" variant="secondary" size="sm" onClick={() => onCopyUsername(credential)}>
-                        <Copy className="size-4" />
+                        {copiedId === credential.id ? <Check className="size-4" /> : <Copy className="size-4" />}
                         {t("vault.actions.copyUsername")}
                       </Button>
                       <Button type="button" variant="secondary" size="sm" onClick={() => onCopyPassword(credential)}>
-                        <Copy className="size-4" />
+                        {copiedId === credential.id ? <Check className="size-4" /> : <Copy className="size-4" />}
                         {t("vault.actions.copyPassword")}
                       </Button>
                       <Button type="button" variant="outline" size="sm" onClick={() => toggleReveal(credential.id)}>
@@ -461,7 +647,7 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
                       </Button>
                     </div>
                     {isRevealed ? (
-                      <div className="max-w-xs truncate rounded-lg border border-border/80 bg-background/80 px-2.5 py-1.5 text-xs font-medium">
+                      <div className="animate-fade-in-up max-w-xs truncate rounded-lg border border-border/80 bg-background/80 px-2.5 py-1.5 text-xs font-medium">
                         {credential.password}
                       </div>
                     ) : null}
@@ -473,7 +659,27 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
 
           {filteredCredentials.length === 0 ? (
             <Card className="premium-card">
-              <CardContent className="py-8 text-sm text-muted-foreground">{t("vault.list.noMatches")}</CardContent>
+              <CardContent className="space-y-3 py-8 text-sm text-muted-foreground">
+                <p>{t("vault.list.noMatches")}</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setFilters({
+                      query: "",
+                      tag: "all",
+                      strength: "all",
+                      reusedOnly: false,
+                      favoritesOnly: false,
+                      issue: "all",
+                      sort: "recent",
+                    })
+                  }
+                >
+                  {t("vault.list.clearFilters")}
+                </Button>
+              </CardContent>
             </Card>
           ) : null}
         </div>
@@ -499,7 +705,7 @@ export function VaultOverview({ payload }: VaultOverviewProps) {
       {deleteTarget ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
           <Card className="premium-card w-full max-w-md">
-            <CardHeader>
+            <CardHeader className="animate-scale-in">
               <CardTitle>{t("vault.deleteConfirm.title")}</CardTitle>
               <CardDescription>{t("vault.deleteConfirm.description")}</CardDescription>
             </CardHeader>

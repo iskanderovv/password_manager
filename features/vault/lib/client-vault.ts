@@ -11,6 +11,7 @@ export type VaultFilterState = {
   strength: "all" | "weak" | "fair" | "strong";
   reusedOnly: boolean;
   favoritesOnly: boolean;
+  issue: "all" | "reused" | "weak" | "missing-url" | "missing-notes" | "stale";
   sort: VaultSort;
 };
 
@@ -75,6 +76,8 @@ export function filterAndSortCredentials(
   filters: VaultFilterState,
   reusedById: Map<string, boolean>,
 ) {
+  const staleThreshold = 180 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
   const normalizedQuery = filters.query.trim().toLowerCase();
 
   const filtered = credentials.filter((item) => {
@@ -89,8 +92,16 @@ export function filterAndSortCredentials(
     const matchesStrength = filters.strength === "all" || item.strength === filters.strength;
     const matchesReused = !filters.reusedOnly || reusedById.get(item.id) === true;
     const matchesFavorite = !filters.favoritesOnly || item.isFavorite;
+    const isStale = now - new Date(item.updatedAt).getTime() > staleThreshold;
+    const matchesIssue =
+      filters.issue === "all" ||
+      (filters.issue === "reused" && reusedById.get(item.id) === true) ||
+      (filters.issue === "weak" && item.strength === "weak") ||
+      (filters.issue === "missing-url" && !item.serviceUrl) ||
+      (filters.issue === "missing-notes" && !item.notes.trim()) ||
+      (filters.issue === "stale" && isStale);
 
-    return matchesQuery && matchesTag && matchesStrength && matchesReused && matchesFavorite;
+    return matchesQuery && matchesTag && matchesStrength && matchesReused && matchesFavorite && matchesIssue;
   });
 
   return filtered.sort((a, b) => {

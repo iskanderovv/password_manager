@@ -30,6 +30,20 @@ export type UnlockVerificationResult =
       errorKey: string;
     };
 
+export type MasterPasswordRotationInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+  newKeyDerivationSalt: string;
+  newKeyDerivationIterations: number;
+  rotatedCredentials: Array<{
+    id: string;
+    usernameEncrypted: string;
+    passwordEncrypted: string;
+    notesEncrypted?: string | null;
+  }>;
+};
+
 const databaseErrorCodes = new Set([
   "P1000",
   "P1001",
@@ -237,6 +251,142 @@ export async function verifyMasterPassword(masterPassword: string): Promise<Unlo
       return {
         ok: false,
         errorKey: "lock.errors.databaseUnavailable",
+      };
+    }
+
+    throw error;
+  }
+}
+
+export async function rotateMasterPassword(input: MasterPasswordRotationInput) {
+  const fieldErrors = validateMasterPasswordInput(input.newPassword, input.confirmPassword);
+  if (fieldErrors.password || fieldErrors.confirmPassword) {
+    return {
+      ok: false as const,
+      errorKey: "settings.security.masterPassword.errors.invalidInput",
+      fieldErrors,
+    };
+  }
+
+  if (!input.currentPassword) {
+    return {
+      ok: false as const,
+      errorKey: "settings.security.masterPassword.errors.currentRequired",
+      fieldErrors: {},
+    };
+  }
+
+  if (!input.newKeyDerivationSalt || input.newKeyDerivationIterations < 100_000) {
+    return {
+      ok: false as const,
+      errorKey: "settings.security.masterPassword.errors.invalidRotationData",
+      fieldErrors: {},
+    };
+  }
+
+  try {
+    const vault = await prisma.vault.findFirst({
+      select: {
+        id: true,
+        masterPasswordHash: true,
+        encryptionKeyVersion: true,
+      },
+      where: {
+        masterPasswordHash: {
+          not: null,
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (!vault?.masterPasswordHash) {
+      return {
+        ok: false as const,
+        errorKey: "lock.errors.setupRequired",
+        fieldErrors: {},
+      };
+    }
+
+    const currentValid = await bcrypt.compare(input.currentPassword, vault.masterPasswordHash);
+
+    if (!currentValid) {
+      return {
+        ok: false as const,
+        errorKey: "settings.security.masterPassword.errors.currentInvalid",
+        fieldErrors: {},
+      };
+    }
+
+    const existingCredentials = await prisma.credential.findMany({
+      where: { vaultId: vault.id, isArchived: false },
+      select: { id: true },
+    });
+
+    if (existingCredentials.length !== input.rotatedCredentials.length) {
+      return {
+        ok: false as const,
+        errorKey: "settings.security.masterPassword.errors.rotationDataMismatch",
+        fieldErrors: {},
+      };
+    }
+
+    const existingIds = new Set(existingCredentials.map((item) => item.id));
+    const rotatedIds = new Set(input.rotatedCredentials.map((item) => item.id));
+
+    if (existingIds.size !== rotatedIds.size || [...existingIds].some((id) => !rotatedIds.has(id))) {
+      return {
+        ok: false as const,
+        errorKey: "settings.security.masterPassword.errors.rotationDataMismatch",
+        fieldErrors: {},
+      };
+    }
+
+    const nextHash = await bcrypt.hash(input.newPassword, BCRYPT_ROUNDS);
+    const nextKeyVersion = vault.encryptionKeyVersion + 1;
+
+    await prisma.$transaction(async (tx) => {
+      await Promise.all(
+        input.rotatedCredentials.map((item) =>
+          tx.credential.update({
+            where: { id: item.id },
+            data: {
+              usernameEncrypted: item.usernameEncrypted,
+              passwordEncrypted: item.passwordEncrypted,
+              notesEncrypted: item.notesEncrypted ?? null,
+              encryptionAlgorithm: "AES_256_GCM",
+              encryptionKeyVersion: nextKeyVersion,
+            },
+          }),
+        ),
+      );
+
+      await tx.vault.update({
+        where: { id: vault.id },
+        data: {
+          masterPasswordHash: nextHash,
+          masterPasswordAlgo: "bcrypt",
+          keyDerivationSalt: input.newKeyDerivationSalt,
+          keyDerivationIterations: input.newKeyDerivationIterations,
+          keyDerivationHash: "SHA-256",
+          encryptionKeyVersion: nextKeyVersion,
+        },
+      });
+    });
+
+    return {
+      ok: true as const,
+      vaultId: vault.id,
+      keyDerivationSalt: input.newKeyDerivationSalt,
+      keyDerivationIterations: input.newKeyDerivationIterations,
+      keyDerivationHash: "SHA-256",
+      encryptionKeyVersion: nextKeyVersion,
+    };
+  } catch (error) {
+    if (isDatabaseUnavailableError(error)) {
+      return {
+        ok: false as const,
+        errorKey: "lock.errors.databaseUnavailable",
+        fieldErrors: {},
       };
     }
 

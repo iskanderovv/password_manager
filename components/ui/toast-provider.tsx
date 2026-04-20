@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={toast.id}
             className={cn(
-              "rounded-xl border px-3 py-2 text-sm shadow-md backdrop-blur",
+              "animate-fade-in-up rounded-xl border px-3 py-2 text-sm shadow-md backdrop-blur",
               toast.variant === "success" && "border-emerald-500/35 bg-emerald-500/15 text-emerald-700 dark:text-emerald-200",
               toast.variant === "error" && "border-rose-500/35 bg-rose-500/15 text-rose-700 dark:text-rose-200",
               toast.variant === "info" && "border-border/80 bg-card/95 text-foreground",

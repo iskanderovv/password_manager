@@ -52,6 +52,26 @@ export async function getActiveVaultId(vaultId?: string) {
   return resolveVaultId(vaultId);
 }
 
+export async function getActiveVaultMeta() {
+  const vaultId = await resolveVaultId();
+  if (!vaultId) return null;
+
+  return prisma.vault.findUnique({
+    where: { id: vaultId },
+    select: {
+      id: true,
+      name: true,
+      defaultAutoLockMinutes: true,
+      requireUnlockForExport: true,
+      hideSecretsByDefault: true,
+      allowClipboardCopy: true,
+      encryptionKeyVersion: true,
+      keyDerivationIterations: true,
+      updatedAt: true,
+    },
+  });
+}
+
 function mapCredentialRecord(record: {
   id: string;
   vaultId: string;
@@ -61,9 +81,9 @@ function mapCredentialRecord(record: {
   passwordEncrypted: string;
   notesEncrypted: string | null;
   passwordStrengthScore: number | null;
-  isFavorite: boolean;
-  isPinned: boolean;
-  lastUsedAt: Date | null;
+  isFavorite?: boolean;
+  isPinned?: boolean;
+  lastUsedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
   tags: Array<{ tag: { name: string } }>;
@@ -77,8 +97,8 @@ function mapCredentialRecord(record: {
     passwordEncrypted: record.passwordEncrypted,
     notesEncrypted: record.notesEncrypted,
     passwordStrengthScore: record.passwordStrengthScore,
-    isFavorite: record.isFavorite,
-    isPinned: record.isPinned,
+    isFavorite: Boolean(record.isFavorite),
+    isPinned: Boolean(record.isPinned),
     lastUsedAt: record.lastUsedAt?.toISOString() ?? null,
     createdAt: record.createdAt.toISOString(),
     updatedAt: record.updatedAt.toISOString(),
@@ -109,7 +129,7 @@ export async function getVaultOverviewPayload(): Promise<VaultOverviewPayload> {
           },
         },
       },
-      orderBy: [{ isPinned: "desc" }, { updatedAt: "desc" }],
+      orderBy: [{ updatedAt: "desc" }],
     }),
     prisma.credentialTag.findMany({
       where: { vaultId },
@@ -204,9 +224,6 @@ export async function createCredential(input: UpsertCredentialEncryptedInput) {
       encryptionKeyVersion: 1,
       encryptionAlgorithm: "AES_256_GCM",
       missingUrlRisk: !input.serviceUrl || !input.serviceUrl.trim(),
-      isFavorite: Boolean(input.isFavorite),
-      isPinned: Boolean(input.isPinned),
-      lastUsedAt: input.lastUsedAt ? new Date(input.lastUsedAt) : null,
       tags: {
         create: tagIds.map((tagId) => ({
           tagId,
@@ -243,9 +260,6 @@ export async function updateCredential(input: UpsertCredentialEncryptedInput) {
       notesEncrypted: input.notesEncrypted ?? null,
       passwordStrengthScore: input.passwordStrengthScore,
       missingUrlRisk: !input.serviceUrl || !input.serviceUrl.trim(),
-      isFavorite: Boolean(input.isFavorite),
-      isPinned: Boolean(input.isPinned),
-      lastUsedAt: input.lastUsedAt ? new Date(input.lastUsedAt) : null,
       tags: {
         deleteMany: {},
         create: tagIds.map((tagId) => ({
@@ -268,23 +282,4 @@ export async function deleteCredentialById(input: { credentialId: string; vaultI
   });
 
   return deleted.count > 0;
-}
-
-export async function setCredentialFavorite(input: {
-  credentialId: string;
-  vaultId: string;
-  isFavorite: boolean;
-}) {
-  const updated = await prisma.credential.updateMany({
-    where: {
-      id: input.credentialId,
-      vaultId: input.vaultId,
-      isArchived: false,
-    },
-    data: {
-      isFavorite: input.isFavorite,
-    },
-  });
-
-  return updated.count > 0;
 }

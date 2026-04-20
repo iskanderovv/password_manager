@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast-provider";
 import { PasswordGeneratorPanel } from "@/features/password-generator/components/password-generator-panel";
-import { defaultPasswordGeneratorOptions, generatePassword } from "@/features/password-generator/lib/generator";
+import { generatePassword } from "@/features/password-generator/lib/generator";
+import { useAppPreferences } from "@/features/preferences/hooks/use-app-preferences";
 import { evaluateCredentialPasswordStrength } from "@/features/security-health/lib/password-strength";
 import { createCredentialAction, deleteCredentialAction, updateCredentialAction } from "@/features/vault/actions";
 import { PasswordStrengthPill } from "@/features/vault/components/password-strength-pill";
@@ -56,6 +57,7 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
   const t = useTranslations();
   const router = useRouter();
   const { notify } = useToast();
+  const { preferences, setPreferences } = useAppPreferences();
 
   const [isSubmitting, startSubmitting] = useTransition();
   const [isDeleting, startDeleting] = useTransition();
@@ -311,7 +313,7 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => setValues((prev) => ({ ...prev, password: generatePassword(defaultPasswordGeneratorOptions) }))}
+                  onClick={() => setValues((prev) => ({ ...prev, password: generatePassword(preferences.generator) }))}
                 >
                   {t("vault.actions.regenerate")}
                 </Button>
@@ -425,6 +427,13 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
 
       <div className="space-y-4">
         <PasswordGeneratorPanel
+          initialOptions={preferences.generator}
+          onOptionsChange={(nextOptions) =>
+            setPreferences((current) => ({
+              ...current,
+              generator: nextOptions,
+            }))
+          }
           onApply={(password) => {
             setValues((prev) => ({ ...prev, password }));
             notify({ message: t("vault.toasts.generatedApplied"), variant: "success" });
