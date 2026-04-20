@@ -24,10 +24,33 @@
     "comingSoon": "Coming soon"
   },
   "nav": {
+    "home": "Home",
     "vault": "Vault",
     "newCredential": "Add Credential",
     "settings": "Settings",
     "lock": "Lock Screen"
+  },
+  "home": {
+    "title": "Home Dashboard",
+    "subtitle": "Quick operational view of your vault health, activity, and trust signals.",
+    "metrics": {
+      "totalCredentials": "Total credentials",
+      "totalTags": "Total tags",
+      "weakCredentials": "Weak credentials",
+      "missingUrl": "Missing URL",
+      "updatedToday": "Updated today"
+    },
+    "session": {
+      "title": "Session & Trust"
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "openVault": "Open vault",
+      "addCredential": "Add credential",
+      "openSettings": "Open settings",
+      "vaultLabel": "Vault: {name}",
+      "defaultVaultName": "Primary Vault"
+    }
   },
   "topbar": {
     "quickSearch": "Quick search",

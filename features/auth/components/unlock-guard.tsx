@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { clearVaultUnlocked, isVaultUnlocked } from "@/lib/auth/vault-session";
-import { clearActiveVaultKey, getActiveVaultKey } from "@/lib/crypto/key-store";
+import { clearActiveVaultKey, getActiveVaultKey, restoreActiveVaultKey } from "@/lib/crypto/key-store";
 
 type UnlockGuardProps = {
   children: React.ReactNode;
@@ -20,14 +20,33 @@ export function UnlockGuard({ children }: UnlockGuardProps) {
     const unlocked = isVaultUnlocked();
     const keyState = getActiveVaultKey();
 
-    if (!unlocked || !keyState) {
+    if (!unlocked) {
       clearVaultUnlocked();
       clearActiveVaultKey();
       router.replace("/lock");
       return;
     }
 
-    setReady(true);
+    if (keyState) {
+      setReady(true);
+      return;
+    }
+
+    let cancelled = false;
+    void restoreActiveVaultKey().then((restored) => {
+      if (cancelled) return;
+      if (restored) {
+        setReady(true);
+        return;
+      }
+      clearVaultUnlocked();
+      clearActiveVaultKey();
+      router.replace("/lock");
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   if (!ready) {

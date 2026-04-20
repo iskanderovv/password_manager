@@ -7,10 +7,10 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 const links = [
+  { href: "/home", key: "nav.home" },
   { href: "/vault", key: "nav.vault" },
   { href: "/vault/new", key: "nav.newCredential" },
   { href: "/settings", key: "nav.settings" },
-  { href: "/lock", key: "nav.lock" }
 ] as const;
 
 export function MobileNav() {

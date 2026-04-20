@@ -24,10 +24,33 @@
     "comingSoon": "Скоро"
   },
   "nav": {
+    "home": "Главная",
     "vault": "Vault",
     "newCredential": "Добавить доступ",
     "settings": "Настройки",
     "lock": "Экран блокировки"
+  },
+  "home": {
+    "title": "Главная панель",
+    "subtitle": "Быстрый обзор состояния vault, активности и сигналов доверия.",
+    "metrics": {
+      "totalCredentials": "Всего credentials",
+      "totalTags": "Всего тегов",
+      "weakCredentials": "Слабые credentials",
+      "missingUrl": "Без URL",
+      "updatedToday": "Обновлено сегодня"
+    },
+    "session": {
+      "title": "Сессия и доверие"
+    },
+    "quickActions": {
+      "title": "Быстрые действия",
+      "openVault": "Открыть vault",
+      "addCredential": "Добавить credential",
+      "openSettings": "Открыть настройки",
+      "vaultLabel": "Vault: {name}",
+      "defaultVaultName": "Основной Vault"
+    }
   },
   "topbar": {
     "quickSearch": "Быстрый поиск",

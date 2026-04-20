@@ -24,10 +24,33 @@
     "comingSoon": "Tez orada"
   },
   "nav": {
+    "home": "Bosh sahifa",
     "vault": "Vault",
     "newCredential": "Credential qo'shish",
     "settings": "Sozlamalar",
     "lock": "Qulf ekrani"
+  },
+  "home": {
+    "title": "Boshqaruv paneli",
+    "subtitle": "Vault holati, faollik va ishonch signallarining tezkor ko'rinishi.",
+    "metrics": {
+      "totalCredentials": "Jami credential",
+      "totalTags": "Jami teg",
+      "weakCredentials": "Kuchsiz credential",
+      "missingUrl": "URL yo'q",
+      "updatedToday": "Bugun yangilangan"
+    },
+    "session": {
+      "title": "Sessiya va ishonch"
+    },
+    "quickActions": {
+      "title": "Tezkor amallar",
+      "openVault": "Vaultni ochish",
+      "addCredential": "Credential qo'shish",
+      "openSettings": "Sozlamalarni ochish",
+      "vaultLabel": "Vault: {name}",
+      "defaultVaultName": "Asosiy Vault"
+    }
   },
   "topbar": {
     "quickSearch": "Tezkor qidiruv",

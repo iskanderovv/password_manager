@@ -64,7 +64,7 @@ export async function deriveKey(
       name: "AES-GCM",
       length: 256,
     },
-    false,
+    true,
     ["encrypt", "decrypt"],
   );
 

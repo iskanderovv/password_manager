@@ -237,14 +237,15 @@ export async function createCredential(input: UpsertCredentialEncryptedInput) {
       vaultId: resolvedVaultId,
       serviceName: input.serviceName.trim(),
       serviceUrl: normalizeUrl(input.serviceUrl),
-      // Sensitive fields are encrypted client-side with the in-memory vault key.
       usernameEncrypted: input.usernameEncrypted,
       passwordEncrypted: input.passwordEncrypted,
       notesEncrypted: input.notesEncrypted ?? null,
       passwordStrengthScore: input.passwordStrengthScore,
       encryptionKeyVersion: 1,
-      encryptionAlgorithm: "AES_256_GCM",
+      encryptionAlgorithm: "AES_256_GCM", // Matches SecretAlgorithm enum
       missingUrlRisk: !input.serviceUrl || !input.serviceUrl.trim(),
+      isFavorite: Boolean(input.isFavorite),
+      isPinned: Boolean(input.isPinned),
       tags: {
         create: tagIds.map((tagId) => ({
           tagId,
@@ -281,6 +282,8 @@ export async function updateCredential(input: UpsertCredentialEncryptedInput) {
       notesEncrypted: input.notesEncrypted ?? null,
       passwordStrengthScore: input.passwordStrengthScore,
       missingUrlRisk: !input.serviceUrl || !input.serviceUrl.trim(),
+      isFavorite: Boolean(input.isFavorite),
+      isPinned: Boolean(input.isPinned),
       tags: {
         deleteMany: {},
         create: tagIds.map((tagId) => ({

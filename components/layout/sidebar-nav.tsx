@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PlusCircle, Settings, ShieldCheck } from "lucide-react";
+import { Fingerprint, House, PlusCircle, Settings, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const links = [
+  { href: "/home", key: "nav.home", icon: House },
   { href: "/vault", key: "nav.vault", icon: ShieldCheck },
   { href: "/vault/new", key: "nav.newCredential", icon: PlusCircle },
   { href: "/settings", key: "nav.settings", icon: Settings },
@@ -20,12 +21,23 @@ export function SidebarNav() {
 
   return (
     <aside className="hidden border-r border-sidebar-border bg-sidebar/70 backdrop-blur-xl text-sidebar-foreground lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:h-screen lg:w-72 lg:flex-col lg:overflow-y-auto">
-      <div className="border-b border-sidebar-border px-6 py-6">
-        <Link href="/vault" className="flex w-full flex-col items-center text-center" aria-label="CREDXVAULT">
-          <span className="text-2xl font-semibold tracking-[0.12em] text-sidebar-foreground">CREDXVAULT</span>
-          <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.24em] text-sidebar-foreground/70">
-            TEAM PASSWORD MANAGER
-          </p>
+      <div className="border-b border-sidebar-border px-6 py-8">
+        <Link href="/home" className="flex items-center gap-4 px-1" aria-label="CREDXVAULT">
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 shadow-inner">
+            <div className="absolute inset-0 rounded-2xl border border-primary/20" />
+            <ShieldCheck className="h-6 w-6 text-primary drop-shadow-sm" />
+            <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border-[2.5px] border-background bg-emerald-500 text-white shadow-sm">
+              <Fingerprint className="h-2.5 w-2.5" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="text-xl font-bold tracking-tight text-foreground">
+              CREDX<span className="text-primary">VAULT</span>
+            </span>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80 leading-tight truncate">
+              TEAM PASS MANAGER
+            </p>
+          </div>
         </Link>
       </div>
 

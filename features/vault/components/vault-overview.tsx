@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { Check, Copy, Eye, EyeOff, List, Pencil, Plus, Rows3, ShieldAlert, Sparkles, Star, Trash2 } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, Fingerprint, List, Pencil, Plus, Rows3, ShieldAlert, ShieldCheck, Sparkles, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -94,7 +94,6 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
   const [isDecrypting, setIsDecrypting] = useState(true);
   const [decryptError, setDecryptError] = useState<string | null>(null);
   const [reusedById, setReusedById] = useState<Map<string, boolean>>(new Map());
-  const [reusedCount, setReusedCount] = useState(0);
   const [revealedIds, setRevealedIds] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DecryptedVaultCredential | null>(null);
@@ -164,12 +163,10 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
       .then((result) => {
         if (cancelled) return;
         setReusedById(result.reusedById);
-        setReusedCount(result.reusedCount);
       })
       .catch(() => {
         if (cancelled) return;
         setReusedById(new Map());
-        setReusedCount(0);
       });
 
     return () => {
@@ -192,16 +189,6 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
   const filteredCredentials = useMemo(
     () => filterAndSortCredentials(credentials, filters, reusedById),
     [credentials, filters, reusedById],
-  );
-
-  const weakCount = useMemo(
-    () => credentials.filter((item) => item.strength === "weak").length,
-    [credentials],
-  );
-
-  const favoritesCount = useMemo(
-    () => credentials.filter((item) => item.isFavorite).length,
-    [credentials],
   );
 
   const tagOptions = useMemo(
@@ -301,9 +288,9 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
       return;
     }
 
-    startLoadingDemoData(() => {
-      void Promise.all(
-        demoCredentials.map(async (item) => {
+    startLoadingDemoData(async () => {
+      try {
+        for (const item of demoCredentials) {
           const encryptedInput = await buildEncryptedCredentialInput({
             vaultId: payload.vaultId!,
             serviceName: item.serviceName,
@@ -318,21 +305,17 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
             key: keyState.key,
           });
 
-          return createCredentialAction(encryptedInput);
-        }),
-      )
-        .then((results) => {
-          if (results.some((result) => !result.ok)) {
-            notify({ message: t("vault.demo.loadFailed"), variant: "error" });
-            return;
+          const result = await createCredentialAction(encryptedInput);
+          if (!result.ok) {
+            throw new Error("Failed to create demo credential");
           }
+        }
 
-          notify({ message: t("vault.demo.loaded"), variant: "success" });
-          router.refresh();
-        })
-        .catch(() => {
-          notify({ message: t("vault.demo.loadFailed"), variant: "error" });
-        });
+        notify({ message: t("vault.demo.loaded"), variant: "success" });
+        router.refresh();
+      } catch (error) {
+        notify({ message: t("vault.demo.loadFailed"), variant: "error" });
+      }
     });
   };
 
@@ -375,56 +358,35 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
         </Button>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Card className="premium-card">
-          <CardContent className="space-y-1 py-4">
-            <p className="text-xs text-muted-foreground">{t("vault.metrics.totalCredentials")}</p>
-            <p className="text-2xl font-semibold">{credentials.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="premium-card">
-          <CardContent className="space-y-1 py-4">
-            <p className="text-xs text-muted-foreground">{t("vault.metrics.reusedCount")}</p>
-            <p className="text-2xl font-semibold">{reusedCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="premium-card">
-          <CardContent className="space-y-1 py-4">
-            <p className="text-xs text-muted-foreground">{t("vault.metrics.weakCount")}</p>
-            <p className="text-2xl font-semibold">{weakCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="premium-card">
-          <CardContent className="space-y-1 py-4">
-            <p className="text-xs text-muted-foreground">{t("vault.metrics.favoriteCount")}</p>
-            <p className="text-2xl font-semibold">{favoritesCount}</p>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid gap-3 rounded-2xl border border-border/70 bg-card/70 p-3 xl:grid-cols-[2fr,1fr,1fr,1fr]">
-        <Input
-          value={filters.query}
-          onChange={(event) => setFilters((prev) => ({ ...prev, query: event.target.value }))}
-          placeholder={t("vault.searchPlaceholder")}
-          aria-label={t("topbar.quickSearch")}
-        />
+      <section className="grid gap-3 rounded-2xl border border-border/60 bg-card/40 p-3 shadow-sm xl:grid-cols-[2fr,1fr,1fr,1fr]">
+        <div className="relative group">
+          <Input
+            value={filters.query}
+            onChange={(event) => setFilters((prev) => ({ ...prev, query: event.target.value }))}
+            placeholder={t("vault.searchPlaceholder")}
+            aria-label={t("topbar.quickSearch")}
+            className="h-11 rounded-xl bg-background/50 pl-10 transition-all focus:bg-background"
+          />
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 group-focus-within:text-primary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+        </div>
 
         <select
-          className="h-11 rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
+          className="h-11 rounded-xl border border-border/80 bg-background/50 px-3 text-[13px] font-medium text-foreground/80 outline-none hover:bg-background focus:ring-2 focus:ring-primary/20"
           value={filters.tag}
           onChange={(event) => setFilters((prev) => ({ ...prev, tag: event.target.value }))}
           aria-label={t("vault.filters.allTags")}
         >
           {tagOptions.map((tag) => (
-            <option key={tag} value={tag}>
+            <option key={tag} value={tag} className="bg-card text-foreground py-2">
               {tag === "all" ? t("vault.filters.allTags") : tag}
             </option>
           ))}
         </select>
 
         <select
-          className="h-11 rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
+          className="h-11 rounded-xl border border-border/80 bg-background/50 px-3 text-[13px] font-medium text-foreground/80 outline-none hover:bg-background focus:ring-2 focus:ring-primary/20"
           value={filters.strength}
           onChange={(event) =>
             setFilters((prev) => ({
@@ -434,14 +396,14 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
           }
           aria-label={t("vault.filters.allStrength")}
         >
-          <option value="all">{t("vault.filters.allStrength")}</option>
-          <option value="weak">{t("vault.strength.weak")}</option>
-          <option value="fair">{t("vault.strength.fair")}</option>
-          <option value="strong">{t("vault.strength.strong")}</option>
+          <option value="all" className="bg-card">{t("vault.filters.allStrength")}</option>
+          <option value="weak" className="bg-card">{t("vault.strength.weak")}</option>
+          <option value="fair" className="bg-card">{t("vault.strength.fair")}</option>
+          <option value="strong" className="bg-card">{t("vault.strength.strong")}</option>
         </select>
 
         <select
-          className="h-11 rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
+          className="h-11 rounded-xl border border-border/80 bg-background/50 px-3 text-[13px] font-medium text-foreground/80 outline-none hover:bg-background focus:ring-2 focus:ring-primary/20"
           value={filters.sort}
           onChange={(event) =>
             setFilters((prev) => ({
@@ -451,13 +413,13 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
           }
           aria-label={t("vault.sort.recent")}
         >
-          <option value="recent">{t("vault.sort.recent")}</option>
-          <option value="alphabetical">{t("vault.sort.alphabetical")}</option>
-          <option value="weakest">{t("vault.sort.weakest")}</option>
+          <option value="recent" className="bg-card">{t("vault.sort.recent")}</option>
+          <option value="alphabetical" className="bg-card">{t("vault.sort.alphabetical")}</option>
+          <option value="weakest" className="bg-card">{t("vault.sort.weakest")}</option>
         </select>
 
         <select
-          className="h-11 rounded-xl border border-border/80 bg-background px-3 text-sm outline-none"
+          className="h-11 rounded-xl border border-border/80 bg-background/50 px-3 text-[13px] font-medium text-foreground/80 outline-none hover:bg-background focus:ring-2 focus:ring-primary/20"
           value={filters.issue}
           onChange={(event) =>
             setFilters((prev) => ({
@@ -467,33 +429,37 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
           }
           aria-label={t("vault.filters.allIssues")}
         >
-          <option value="all">{t("vault.filters.allIssues")}</option>
-          <option value="reused">{t("vault.insights.reused")}</option>
-          <option value="weak">{t("vault.insights.weak")}</option>
-          <option value="stale">{t("vault.insights.stale")}</option>
-          <option value="missing-url">{t("vault.insights.missingUrl")}</option>
-          <option value="missing-notes">{t("settings.security.health.metrics.missingNotes")}</option>
+          <option value="all" className="bg-card">{t("vault.filters.allIssues")}</option>
+          <option value="reused" className="bg-card">{t("vault.insights.reused")}</option>
+          <option value="weak" className="bg-card">{t("vault.insights.weak")}</option>
+          <option value="stale" className="bg-card">{t("vault.insights.stale")}</option>
+          <option value="missing-url" className="bg-card">{t("vault.insights.missingUrl")}</option>
+          <option value="missing-notes" className="bg-card">{t("settings.security.health.metrics.missingNotes")}</option>
         </select>
 
-        <label className="inline-flex items-center gap-2 rounded-xl border border-border/80 bg-background px-3 py-2 text-sm text-muted-foreground">
+        <label className="group flex cursor-pointer items-center gap-2.5 rounded-xl border border-border/80 bg-background/50 px-3 py-2 transition-all hover:bg-background hover:border-primary/30">
           <input
             type="checkbox"
             checked={filters.reusedOnly}
             onChange={(event) => setFilters((prev) => ({ ...prev, reusedOnly: event.target.checked }))}
             aria-label={t("vault.filters.reusedOnly")}
           />
-          {t("vault.filters.reusedOnly")}
+          <span className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            {t("vault.filters.reusedOnly")}
+          </span>
         </label>
-        <label className="inline-flex items-center gap-2 rounded-xl border border-border/80 bg-background px-3 py-2 text-sm text-muted-foreground">
+        <label className="group flex cursor-pointer items-center gap-2.5 rounded-xl border border-border/80 bg-background/50 px-3 py-2 transition-all hover:bg-background hover:border-primary/30">
           <input
             type="checkbox"
             checked={filters.favoritesOnly}
             onChange={(event) => setFilters((prev) => ({ ...prev, favoritesOnly: event.target.checked }))}
             aria-label={t("vault.filters.favoritesOnly")}
           />
-          {t("vault.filters.favoritesOnly")}
+          <span className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            {t("vault.filters.favoritesOnly")}
+          </span>
         </label>
-        <div className="inline-flex h-11 items-center gap-1 rounded-xl border border-border/80 bg-background p-1">
+        <div className="flex items-center gap-1 rounded-xl border border-border/80 bg-background/50 p-1">
           <button
             type="button"
             onClick={() =>
@@ -502,8 +468,8 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
                 defaultVaultView: "list",
               }))
             }
-            className={`inline-flex h-9 items-center gap-1 rounded-lg px-2 text-xs ${
-              preferences.defaultVaultView === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+            className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
+              preferences.defaultVaultView === "list" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted/50"
             }`}
             aria-label={t("settings.preferences.defaultView.list")}
           >
@@ -518,10 +484,10 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
                 defaultVaultView: "compact",
               }))
             }
-            className={`inline-flex h-9 items-center gap-1 rounded-lg px-2 text-xs ${
+            className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
               preferences.defaultVaultView === "compact"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-muted/50"
             }`}
             aria-label={t("settings.preferences.defaultView.compact")}
           >
@@ -694,23 +660,6 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
           ) : null}
         </div>
       )}
-
-      <Card className="premium-card">
-        <CardHeader>
-          <CardTitle>{t("vault.insights.title")}</CardTitle>
-          <CardDescription>{t("vault.insights.subtitle")}</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-2 sm:grid-cols-2">
-          <div className="rounded-xl border border-border/70 bg-background/70 p-3 text-sm">
-            <p className="text-muted-foreground">{t("vault.insights.reused")}</p>
-            <p className="mt-1 text-lg font-semibold">{reusedCount}</p>
-          </div>
-          <div className="rounded-xl border border-border/70 bg-background/70 p-3 text-sm">
-            <p className="text-muted-foreground">{t("vault.insights.weak")}</p>
-            <p className="mt-1 text-lg font-semibold">{weakCount}</p>
-          </div>
-        </CardContent>
-      </Card>
 
       {deleteTarget ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
