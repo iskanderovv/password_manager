@@ -241,231 +241,240 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
     );
   }
 
+  const generatorPanel = (
+    <PasswordGeneratorPanel
+      initialOptions={preferences.generator}
+      onOptionsChange={(nextOptions) =>
+        setPreferences((current) => ({
+          ...current,
+          generator: nextOptions,
+        }))
+      }
+      onApply={(password) => {
+        setValues((prev) => ({ ...prev, password }));
+        notify({ message: t("vault.toasts.generatedApplied"), variant: "success" });
+      }}
+    />
+  );
+
   return (
-    <div className="grid gap-6 xl:grid-cols-[2fr,1fr]">
-      <Card className="premium-card">
-        <CardHeader>
-          <CardTitle>{t(mode === "create" ? "vault.form.createTitle" : "vault.form.editTitle")}</CardTitle>
-          <CardDescription>{t("vault.form.helper")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
-          {formError ? (
-            <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-2 text-sm text-rose-700 dark:text-rose-300">
-              {t(formError)}
-            </div>
-          ) : null}
+    <div className="space-y-6">
+      {mode === "create" ? generatorPanel : null}
 
-          <label className="space-y-2 text-sm">
-            <span>{t("vault.form.fields.serviceName")}</span>
-            <Input
-              value={values.serviceName}
-              onChange={(event) => setValues((prev) => ({ ...prev, serviceName: event.target.value }))}
-              placeholder={t("vault.form.placeholders.serviceName")}
-              autoFocus={mode === "create"}
-            />
-            {fieldErrors?.serviceName ? <p className="text-xs text-rose-600">{t(fieldErrors.serviceName)}</p> : null}
-          </label>
+      <div className={mode === "edit" ? "grid gap-6 xl:grid-cols-[2fr,1fr]" : "grid gap-6"}>
+        <Card className="premium-card">
+          <CardHeader>
+            <CardTitle>{t(mode === "create" ? "vault.form.createTitle" : "vault.form.editTitle")}</CardTitle>
+            <CardDescription>{t("vault.form.helper")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-5">
+            {formError ? (
+              <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-2 text-sm text-rose-700 dark:text-rose-300">
+                {t(formError)}
+              </div>
+            ) : null}
 
-          <label className="space-y-2 text-sm">
-            <span>{t("vault.form.fields.url")}</span>
-            <Input
-              value={values.serviceUrl}
-              onChange={(event) => setValues((prev) => ({ ...prev, serviceUrl: event.target.value }))}
-              placeholder={t("vault.form.placeholders.url")}
-            />
-          </label>
-
-          <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2 text-sm">
-              <span>{t("vault.form.fields.username")}</span>
+              <span>{t("vault.form.fields.serviceName")}</span>
               <Input
-                value={values.username}
-                onChange={(event) => setValues((prev) => ({ ...prev, username: event.target.value }))}
-                placeholder={t("vault.form.placeholders.username")}
-                autoComplete="off"
+                value={values.serviceName}
+                onChange={(event) => setValues((prev) => ({ ...prev, serviceName: event.target.value }))}
+                placeholder={t("vault.form.placeholders.serviceName")}
+                autoFocus={mode === "create"}
               />
-              {fieldErrors?.username ? <p className="text-xs text-rose-600">{t(fieldErrors.username)}</p> : null}
+              {fieldErrors?.serviceName ? <p className="text-xs text-rose-600">{t(fieldErrors.serviceName)}</p> : null}
             </label>
 
             <label className="space-y-2 text-sm">
-              <span>{t("vault.form.fields.password")}</span>
-              <div className="relative">
+              <span>{t("vault.form.fields.url")}</span>
+              <Input
+                value={values.serviceUrl}
+                onChange={(event) => setValues((prev) => ({ ...prev, serviceUrl: event.target.value }))}
+                placeholder={t("vault.form.placeholders.url")}
+              />
+            </label>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="space-y-2 text-sm">
+                <span>{t("vault.form.fields.username")}</span>
                 <Input
-                  value={values.password}
-                  onChange={(event) => setValues((prev) => ({ ...prev, password: event.target.value }))}
-                  placeholder={t("vault.form.placeholders.password")}
+                  value={values.username}
+                  onChange={(event) => setValues((prev) => ({ ...prev, username: event.target.value }))}
+                  placeholder={t("vault.form.placeholders.username")}
                   autoComplete="off"
-                  type={showPassword ? "text" : "password"}
-                  className="pr-10"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-muted/60"
-                  aria-label={showPassword ? t("lock.hidePassword") : t("lock.showPassword")}
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-              <div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setValues((prev) => ({ ...prev, password: generatePassword(preferences.generator) }))}
-                >
-                  {t("vault.actions.regenerate")}
+                {fieldErrors?.username ? <p className="text-xs text-rose-600">{t(fieldErrors.username)}</p> : null}
+              </label>
+
+              <label className="space-y-2 text-sm">
+                <span>{t("vault.form.fields.password")}</span>
+                <div className="relative">
+                  <Input
+                    value={values.password}
+                    onChange={(event) => setValues((prev) => ({ ...prev, password: event.target.value }))}
+                    placeholder={t("vault.form.placeholders.password")}
+                    autoComplete="off"
+                    type={showPassword ? "text" : "password"}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-muted/60"
+                    aria-label={showPassword ? t("lock.hidePassword") : t("lock.showPassword")}
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+                <div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setValues((prev) => ({ ...prev, password: generatePassword(preferences.generator) }))}
+                  >
+                    {t("vault.actions.regenerate")}
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <PasswordStrengthPill strength={strength.label} label={t(`vault.strength.${strength.label}`)} />
+                  <span className="text-xs text-muted-foreground">{t("vault.form.passwordHelper")}</span>
+                </div>
+                {fieldErrors?.password ? <p className="text-xs text-rose-600">{t(fieldErrors.password)}</p> : null}
+              </label>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-sm">{t("vault.form.fields.tags")}</span>
+              <div className="flex gap-2">
+                <Input
+                  value={tagInput}
+                  onChange={(event) => setTagInput(event.target.value)}
+                  placeholder={t("vault.form.placeholders.tags")}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === ",") {
+                      event.preventDefault();
+                      addTag(tagInput);
+                    }
+                  }}
+                  list="vault-tag-suggestions"
+                />
+                <Button type="button" variant="secondary" onClick={() => addTag(tagInput)}>
+                  {t("vault.actions.addTag")}
                 </Button>
               </div>
-              <div className="flex items-center gap-2">
-                <PasswordStrengthPill strength={strength.label} label={t(`vault.strength.${strength.label}`)} />
-                <span className="text-xs text-muted-foreground">{t("vault.form.passwordHelper")}</span>
-              </div>
-              {fieldErrors?.password ? <p className="text-xs text-rose-600">{t(fieldErrors.password)}</p> : null}
-            </label>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-sm">{t("vault.form.fields.tags")}</span>
-            <div className="flex gap-2">
-              <Input
-                value={tagInput}
-                onChange={(event) => setTagInput(event.target.value)}
-                placeholder={t("vault.form.placeholders.tags")}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === ",") {
-                    event.preventDefault();
-                    addTag(tagInput);
-                  }
-                }}
-                list="vault-tag-suggestions"
-              />
-              <Button type="button" variant="secondary" onClick={() => addTag(tagInput)}>
-                {t("vault.actions.addTag")}
-              </Button>
-            </div>
-            <datalist id="vault-tag-suggestions">
-              {availableTags.map((tag) => (
-                <option key={tag} value={tag} />
-              ))}
-            </datalist>
-            <div className="flex flex-wrap gap-2">
-              {values.tags.map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  className="rounded-full border border-border/80 bg-muted/40 px-2.5 py-1 text-xs text-muted-foreground transition hover:text-foreground"
-                >
-                  #{tag} ×
-                </button>
-              ))}
-            </div>
-            {suggestedTags.length > 0 ? (
+              <datalist id="vault-tag-suggestions">
+                {availableTags.map((tag) => (
+                  <option key={tag} value={tag} />
+                ))}
+              </datalist>
               <div className="flex flex-wrap gap-2">
-                {suggestedTags.map((tag) => (
+                {values.tags.map((tag) => (
                   <button
                     key={tag}
                     type="button"
-                    onClick={() => addTag(tag)}
-                    className="rounded-full border border-border/70 bg-background px-2.5 py-1 text-xs text-muted-foreground transition hover:text-foreground"
+                    onClick={() => removeTag(tag)}
+                    className="rounded-full border border-border/80 bg-muted/40 px-2.5 py-1 text-xs text-muted-foreground transition hover:text-foreground"
                   >
-                    + {tag}
+                    #{tag} ×
                   </button>
                 ))}
               </div>
-            ) : null}
-            {fieldErrors?.tags ? <p className="text-xs text-rose-600">{t(fieldErrors.tags)}</p> : null}
-          </div>
-
-          <label className="space-y-2 text-sm">
-            <span>{t("vault.form.fields.notes")}</span>
-            <Textarea
-              value={values.notes}
-              onChange={(event) => setValues((prev) => ({ ...prev, notes: event.target.value }))}
-              placeholder={t("vault.form.placeholders.notes")}
-            />
-          </label>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
-              <input
-                type="checkbox"
-                checked={values.isFavorite}
-                onChange={(event) => setValues((prev) => ({ ...prev, isFavorite: event.target.checked }))}
-              />
-              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
-                {t("vault.form.fields.favorite")}
-              </span>
-            </label>
-            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
-              <input
-                type="checkbox"
-                checked={values.isPinned}
-                onChange={(event) => setValues((prev) => ({ ...prev, isPinned: event.target.checked }))}
-              />
-              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
-                {t("vault.form.fields.pinned")}
-              </span>
-            </label>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 pt-2">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? t("vault.form.submitting") : t("vault.form.save")}
-            </Button>
-            <Button asChild type="button" variant="secondary">
-              <Link href="/vault">{t("common.cancel")}</Link>
-            </Button>
-            {mode === "edit" ? (
-              <Button type="button" variant="outline" onClick={() => setShowDeleteConfirm(true)}>
-                <Trash2 className="size-4" />
-                {t("vault.actions.delete")}
-              </Button>
-            ) : null}
-          </div>
-          </form>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-4">
-        <PasswordGeneratorPanel
-          initialOptions={preferences.generator}
-          onOptionsChange={(nextOptions) =>
-            setPreferences((current) => ({
-              ...current,
-              generator: nextOptions,
-            }))
-          }
-          onApply={(password) => {
-            setValues((prev) => ({ ...prev, password }));
-            notify({ message: t("vault.toasts.generatedApplied"), variant: "success" });
-          }}
-        />
-
-        {mode === "edit" && credential ? (
-          <Card className="premium-card">
-            <CardHeader>
-              <CardTitle>{t("vault.form.metadataTitle")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <p className="text-muted-foreground">
-                {t("vault.form.createdAt")}: <span className="text-foreground">{createdAtLabel}</span>
-              </p>
-              <p className="text-muted-foreground">
-                {t("vault.form.updatedAt")}: <span className="text-foreground">{updatedAtLabel}</span>
-              </p>
-              {!values.serviceUrl ? (
-                <div className="mt-2 rounded-xl border border-amber-500/35 bg-amber-500/10 p-2 text-amber-700 dark:text-amber-300">
-                  <p className="flex items-center gap-1 text-xs">
-                    <ShieldAlert className="size-3.5" />
-                    {t("vault.warnings.missingUrl")}
-                  </p>
+              {suggestedTags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {suggestedTags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => addTag(tag)}
+                      className="rounded-full border border-border/70 bg-background px-2.5 py-1 text-xs text-muted-foreground transition hover:text-foreground"
+                    >
+                      + {tag}
+                    </button>
+                  ))}
                 </div>
               ) : null}
-            </CardContent>
-          </Card>
+              {fieldErrors?.tags ? <p className="text-xs text-rose-600">{t(fieldErrors.tags)}</p> : null}
+            </div>
+
+            <label className="space-y-2 text-sm">
+              <span>{t("vault.form.fields.notes")}</span>
+              <Textarea
+                value={values.notes}
+                onChange={(event) => setValues((prev) => ({ ...prev, notes: event.target.value }))}
+                placeholder={t("vault.form.placeholders.notes")}
+              />
+            </label>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
+                <input
+                  type="checkbox"
+                  checked={values.isFavorite}
+                  onChange={(event) => setValues((prev) => ({ ...prev, isFavorite: event.target.checked }))}
+                />
+                <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                  {t("vault.form.fields.favorite")}
+                </span>
+              </label>
+              <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
+                <input
+                  type="checkbox"
+                  checked={values.isPinned}
+                  onChange={(event) => setValues((prev) => ({ ...prev, isPinned: event.target.checked }))}
+                />
+                <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                  {t("vault.form.fields.pinned")}
+                </span>
+              </label>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? t("vault.form.submitting") : t("vault.form.save")}
+              </Button>
+              <Button asChild type="button" variant="secondary">
+                <Link href="/vault">{t("common.cancel")}</Link>
+              </Button>
+              {mode === "edit" ? (
+                <Button type="button" variant="outline" onClick={() => setShowDeleteConfirm(true)}>
+                  <Trash2 className="size-4" />
+                  {t("vault.actions.delete")}
+                </Button>
+              ) : null}
+            </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {mode === "edit" ? (
+          <div className="space-y-4">
+            {generatorPanel}
+            {credential ? (
+              <Card className="premium-card">
+                <CardHeader>
+                  <CardTitle>{t("vault.form.metadataTitle")}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <p className="text-muted-foreground">
+                    {t("vault.form.createdAt")}: <span className="text-foreground">{createdAtLabel}</span>
+                  </p>
+                  <p className="text-muted-foreground">
+                    {t("vault.form.updatedAt")}: <span className="text-foreground">{updatedAtLabel}</span>
+                  </p>
+                  {!values.serviceUrl ? (
+                    <div className="mt-2 rounded-xl border border-amber-500/35 bg-amber-500/10 p-2 text-amber-700 dark:text-amber-300">
+                      <p className="flex items-center gap-1 text-xs">
+                        <ShieldAlert className="size-3.5" />
+                        {t("vault.warnings.missingUrl")}
+                      </p>
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
