@@ -115,6 +115,16 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
   });
 
   useEffect(() => {
+    setFilters((current) => ({
+      ...current,
+      query: initialFilters?.query ?? "",
+      issue: initialFilters?.issue ?? "all",
+      strength: initialFilters?.strength ?? "all",
+      reusedOnly: initialFilters?.reusedOnly ?? false,
+    }));
+  }, [initialFilters?.query, initialFilters?.issue, initialFilters?.strength, initialFilters?.reusedOnly]);
+
+  useEffect(() => {
     const keyState = getActiveVaultKey();
     if (!keyState) {
       router.replace("/lock");

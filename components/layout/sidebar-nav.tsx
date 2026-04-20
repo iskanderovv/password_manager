@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Lock, PlusCircle, Settings, ShieldCheck } from "lucide-react";
+import { PlusCircle, Settings, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,6 @@ const links = [
   { href: "/vault", key: "nav.vault", icon: ShieldCheck },
   { href: "/vault/new", key: "nav.newCredential", icon: PlusCircle },
   { href: "/settings", key: "nav.settings", icon: Settings },
-  { href: "/lock", key: "nav.lock", icon: Lock },
 ] as const;
 
 export function SidebarNav() {
