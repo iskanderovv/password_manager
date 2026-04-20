@@ -20,7 +20,7 @@ export function SidebarNav() {
   const t = useTranslations();
 
   return (
-    <aside className="hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:h-screen lg:w-72 lg:flex-col lg:overflow-y-auto">
+    <aside className="hidden border-r border-sidebar-border bg-sidebar/70 backdrop-blur-xl text-sidebar-foreground lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:h-screen lg:w-72 lg:flex-col lg:overflow-y-auto">
       <div className="border-b border-sidebar-border px-6 py-6">
         <Link href="/vault" className="flex w-full flex-col items-center text-center" aria-label="CREDXVAULT">
           <span className="text-2xl font-semibold tracking-[0.12em] text-sidebar-foreground">CREDXVAULT</span>
@@ -40,23 +40,23 @@ export function SidebarNav() {
               key={link.href}
               href={link.href}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition",
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
                 active
-                  ? "bg-white/10 text-white shadow-sm"
-                  : "text-sidebar-foreground/80 hover:bg-white/5 hover:text-sidebar-foreground",
+                  ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                  : "text-sidebar-foreground/70 hover:bg-muted/50 hover:text-sidebar-foreground",
               )}
             >
-              <Icon className="size-4" />
-              <span>{t(link.key)}</span>
+              <Icon className={cn("size-4", active ? "text-primary-foreground" : "text-primary")} />
+              <span className={cn(active && "font-medium")}>{t(link.key)}</span>
             </Link>
           );
         })}
       </nav>
 
       <div className="border-t border-sidebar-border p-4">
-        <div className="rounded-xl border border-sidebar-border bg-white/3 p-3">
-          <p className="text-xs uppercase tracking-wider text-sidebar-foreground/60">{t("common.security")}</p>
-          <p className="mt-1 text-sm text-sidebar-foreground/85">{t("vault.insights.title")}</p>
+        <div className="rounded-xl border border-sidebar-border bg-muted/30 p-3">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50">{t("common.security")}</p>
+          <p className="mt-1 text-xs font-medium text-sidebar-foreground/80">{t("vault.insights.title")}</p>
           <div className="mt-3">
             <Badge variant="warning">{t("common.statusNeedsAttention")}</Badge>
           </div>

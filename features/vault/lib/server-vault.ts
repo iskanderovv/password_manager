@@ -120,9 +120,19 @@ export async function getVaultOverviewPayload(): Promise<VaultOverviewPayload> {
   const [credentials, tags] = await Promise.all([
     prisma.credential.findMany({
       where: { vaultId, isArchived: false },
-      include: {
+      select: {
+        id: true,
+        vaultId: true,
+        serviceName: true,
+        serviceUrl: true,
+        usernameEncrypted: true,
+        passwordEncrypted: true,
+        notesEncrypted: true,
+        passwordStrengthScore: true,
+        createdAt: true,
+        updatedAt: true,
         tags: {
-          include: {
+          select: {
             tag: {
               select: { name: true },
             },
@@ -148,9 +158,20 @@ export async function getVaultOverviewPayload(): Promise<VaultOverviewPayload> {
 export async function getCredentialById(id: string) {
   const credential = await prisma.credential.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      vaultId: true,
+      serviceName: true,
+      serviceUrl: true,
+      usernameEncrypted: true,
+      passwordEncrypted: true,
+      notesEncrypted: true,
+      passwordStrengthScore: true,
+      createdAt: true,
+      updatedAt: true,
+      isArchived: true,
       tags: {
-        include: {
+        select: {
           tag: {
             select: { name: true },
           },

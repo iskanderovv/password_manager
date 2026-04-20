@@ -41,9 +41,9 @@ export default async function RootLayout({
     <html
       lang={resolvedLocale}
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="min-h-full bg-background text-foreground">
+      <body>
         <Providers locale={resolvedLocale} messages={messages} timeZone={timeZone}>
           {children}
         </Providers>

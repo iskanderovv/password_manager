@@ -48,7 +48,7 @@ export function LocaleSwitcher() {
     <div ref={rootRef} className="relative">
       <button
         type="button"
-        className="inline-flex h-10 items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-3 text-sm transition hover:bg-card"
+        className="inline-flex h-10 items-center gap-2 rounded-xl border border-border/70 bg-card px-3 text-sm transition hover:bg-muted/60"
         aria-label={t("common.language")}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -63,7 +63,7 @@ export function LocaleSwitcher() {
         <div
           role="listbox"
           aria-label={t("common.language")}
-          className="animate-scale-in absolute right-0 top-12 z-50 w-44 rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-lg backdrop-blur"
+          className="animate-scale-in absolute right-0 top-12 z-50 w-44 rounded-xl border border-border/80 bg-card p-1.5 shadow-lg"
         >
           {locales.map((value) => {
             const selected = value === locale;
@@ -74,7 +74,7 @@ export function LocaleSwitcher() {
                 type="button"
                 onClick={() => applyLocale(value)}
                 className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-sm transition ${
-                  selected ? "bg-primary/15 text-primary" : "bg-card/80 hover:bg-muted/80"
+                  selected ? "bg-primary/15 text-primary" : "bg-card hover:bg-muted/80"
                 }`}
                 aria-selected={selected}
               >

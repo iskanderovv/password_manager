@@ -70,6 +70,7 @@
     },
     "unlock": {
       "title": "Unlock your team vault",
+      "description": "Enter your master password to access your secure data",
       "subtitle": "Access shared credentials for cloud tools, client portals, and internal systems in one trusted workspace.",
       "cardTitle": "Vault access",
       "helper": "Enter your master password to unlock an in-memory encryption session.",

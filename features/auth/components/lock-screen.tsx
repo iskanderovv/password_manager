@@ -1,13 +1,12 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, ShieldCheck, Fingerprint, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -18,6 +17,7 @@ import { evaluatePasswordStrength } from "@/lib/auth/password-policy";
 import { clearVaultUnlocked, isVaultUnlocked } from "@/lib/auth/vault-session";
 import { deriveKey } from "@/lib/crypto/vault-crypto";
 import { clearActiveVaultKey, getActiveVaultKey, setActiveVaultKey } from "@/lib/crypto/key-store";
+import { cn } from "@/lib/utils";
 
 import { PasswordStrengthMeter } from "./password-strength";
 
@@ -130,45 +130,63 @@ export function LockScreen({ hasVault }: LockScreenProps) {
   const currentErrorKey = clientErrorKey ?? (mode === "create" ? createState.errorKey : unlockState.errorKey);
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 lg:px-8">
-      <div className="mb-6 flex justify-end gap-2">
-        <LocaleSwitcher />
-        <ThemeToggle />
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4 py-12">
+      {/* Background Ornaments */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-[10%] -top-[10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full bg-emerald-500/10 blur-[120px]" />
+        <div className="absolute left-1/2 top-1/2 h-[60%] w-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[160px]" />
       </div>
-      <div className="grid items-stretch gap-6 lg:grid-cols-[1.08fr,0.92fr]">
-        <section className="premium-card relative overflow-hidden border-border/80">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(21,94,239,0.14),transparent_50%)]" />
-          <div className="relative flex h-full flex-col justify-center px-7 py-10 lg:px-10">
-            <Badge className="w-fit">{t("common.appName")}</Badge>
-            <p className="mt-5 text-2xl font-semibold tracking-[0.12em] lg:text-4xl">CREDXVAULT</p>
-            <p className="mt-3 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground">
-              TEAM PASSWORD MANAGER
-            </p>
-            <p className="mt-6 max-w-md text-sm text-muted-foreground">
-              {mode === "create" ? t("lock.create.title") : t("lock.unlock.title")}
-            </p>
-          </div>
-        </section>
 
-        <Card className="premium-card w-full border-border/80 transition-all duration-300">
-          <CardHeader className="space-y-2">
-            <CardTitle className="text-xl lg:text-2xl">
+      <div className="z-10 w-full max-w-[440px] space-y-8">
+        {/* Header/Branding */}
+        <div className="flex flex-col items-center space-y-3 text-center animate-fade-in-up">
+          <div className="relative mb-2 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 shadow-inner">
+            <div className="absolute inset-0 rounded-3xl border border-primary/20" />
+            {mode === "unlock" ? (
+              <LockKeyhole className="h-10 w-10 text-primary drop-shadow-sm" />
+            ) : (
+              <ShieldCheck className="h-10 w-10 text-primary drop-shadow-sm" />
+            )}
+            <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-4 border-background bg-emerald-500 text-white shadow-lg">
+              <Fingerprint className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight">
+              CREDX<span className="text-primary">VAULT</span>
+            </h1>
+          </div>
+        </div>
+
+        {/* Action Card */}
+        <Card className="animate-scale-in overflow-hidden border-border/50 bg-card/60 backdrop-blur-xl shadow-2xl">
+          <CardHeader className="space-y-1 pb-4 text-center">
+            <CardTitle className="text-xl">
               {mode === "create" ? t("lock.create.title") : t("lock.unlock.title")}
             </CardTitle>
+            <CardDescription>
+              {mode === "create" ? t("lock.create.description") : t("lock.unlock.description")}
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          
+          <CardContent className="space-y-6 pt-2">
             {currentErrorKey ? (
-              <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-2 text-sm text-rose-700 dark:text-rose-300">
-                {t(currentErrorKey)}
+              <div className="flex items-start gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-600 dark:text-rose-400 animate-fade-in-up">
+                <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                <p>{t(currentErrorKey)}</p>
               </div>
             ) : null}
 
             {mode === "create" ? (
-              <form action={createAction} className="space-y-4">
-                <label className="space-y-2 pb-2 text-sm">
-                  <span className="text-muted-foreground">{t("lock.masterPasswordLabel")}</span>
-                  <div className="relative">
+              <form action={createAction} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80" htmlFor="password">
+                    {t("lock.masterPasswordLabel")}
+                  </label>
+                  <div className="relative group">
                     <Input
+                      id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
@@ -178,29 +196,32 @@ export function LockScreen({ hasVault }: LockScreenProps) {
                         setCreatePassword(event.target.value);
                         setClientErrorKey(null);
                       }}
-                      className="pr-11"
+                      className="h-12 rounded-xl bg-background/50 pr-11 transition-all focus:ring-primary/20"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition hover:bg-muted/60"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition hover:bg-muted"
                       aria-label={showPassword ? t("lock.hidePassword") : t("lock.showPassword")}
                     >
                       {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
                   </div>
                   {createState.fieldErrors?.password ? (
-                    <p className="text-xs text-rose-600 dark:text-rose-300">{t(createState.fieldErrors.password)}</p>
+                    <p className="text-xs font-medium text-rose-500">{t(createState.fieldErrors.password)}</p>
                   ) : null}
-                </label>
+                </div>
 
                 <PasswordStrengthMeter strength={strength} />
 
-                <label className="space-y-2 text-sm">
-                  <span className="text-muted-foreground">{t("lock.confirmPasswordLabel")}</span>
-                  <div className="relative">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80" htmlFor="confirmPassword">
+                    {t("lock.confirmPasswordLabel")}
+                  </label>
+                  <div className="relative group">
                     <Input
+                      id="confirmPassword"
                       name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       autoComplete="new-password"
@@ -210,41 +231,52 @@ export function LockScreen({ hasVault }: LockScreenProps) {
                         setConfirmPassword(event.target.value);
                         setClientErrorKey(null);
                       }}
-                      className="pr-11"
+                      className="h-12 rounded-xl bg-background/50 pr-11 transition-all focus:ring-primary/20"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition hover:bg-muted/60"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition hover:bg-muted"
                       aria-label={showConfirmPassword ? t("lock.hidePassword") : t("lock.showPassword")}
                     >
                       {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
                   </div>
                   {createState.fieldErrors?.confirmPassword ? (
-                    <p className="text-xs text-rose-600 dark:text-rose-300">{t(createState.fieldErrors.confirmPassword)}</p>
+                    <p className="text-xs font-medium text-rose-500">{t(createState.fieldErrors.confirmPassword)}</p>
                   ) : null}
-                </label>
+                </div>
 
-                <p className="text-xs text-muted-foreground">{t("lock.create.warning")}</p>
+                <div className="flex items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[13px] text-amber-700 dark:text-amber-400">
+                  <ShieldAlert className="h-4 w-4 shrink-0" />
+                  <p className="leading-tight">{t("lock.create.warning")}</p>
+                </div>
 
                 <Button
                   type="submit"
-                  className="mt-2 w-full"
+                  className="h-12 w-full rounded-xl bg-primary text-sm font-semibold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   disabled={!createIsValid || createPending || isCompletingUnlock}
                 >
-                  {createPending || isCompletingUnlock ? t("lock.create.submitting") : t("lock.create.submit")}
+                  {createPending || isCompletingUnlock ? (
+                    <span className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      {t("lock.create.submitting")}
+                    </span>
+                  ) : (
+                    t("lock.create.submit")
+                  )}
                 </Button>
               </form>
-            ) : null}
-
-            {mode !== "create" ? (
-              <form action={unlockAction} className="space-y-4">
-                <label className="space-y-2 pb-2 text-sm">
-                  <span className="text-muted-foreground">{t("lock.masterPasswordLabel")}</span>
-                  <div className="relative">
+            ) : (
+              <form action={unlockAction} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground/80" htmlFor="unlockPassword">
+                    {t("lock.masterPasswordLabel")}
+                  </label>
+                  <div className="relative group">
                     <Input
+                      id="unlockPassword"
                       name="password"
                       type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
@@ -254,31 +286,50 @@ export function LockScreen({ hasVault }: LockScreenProps) {
                         setUnlockPassword(event.target.value);
                         setClientErrorKey(null);
                       }}
-                      className="pr-11"
+                      className="h-12 rounded-xl bg-background/50 pr-11 transition-all focus:ring-primary/20"
                       required
+                      autoFocus
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition hover:bg-muted/60"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition hover:bg-muted"
                       aria-label={showPassword ? t("lock.hidePassword") : t("lock.showPassword")}
                     >
                       {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
                   </div>
-                </label>
+                </div>
 
                 <Button
                   type="submit"
-                  className="mt-2 w-full"
+                  className="h-12 w-full rounded-xl bg-primary text-sm font-semibold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   disabled={!unlockIsValid || unlockPending || isCompletingUnlock}
                 >
-                  {unlockPending || isCompletingUnlock ? t("lock.unlock.submitting") : t("lock.unlock.submit")}
+                  {unlockPending || isCompletingUnlock ? (
+                    <span className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      {t("lock.unlock.submitting")}
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <LockKeyhole className="h-4 w-4" />
+                      {t("lock.unlock.submit")}
+                    </span>
+                  )}
                 </Button>
               </form>
-            ) : null}
+            )}
           </CardContent>
         </Card>
+
+        {/* Footer controls */}
+        <div className="flex items-center justify-between px-2 animate-fade-in-up delay-150">
+          <div className="flex items-center gap-1">
+            <LocaleSwitcher />
+          </div>
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );

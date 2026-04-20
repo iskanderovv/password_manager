@@ -70,6 +70,7 @@
     },
     "unlock": {
       "title": "Jamoa vaultini oching",
+      "description": "Himoyalangan ma'lumotlarga kirish uchun master parolni kiriting",
       "subtitle": "Bulut servislar, mijoz portallari va ichki tizimlar credentiallariga bitta ishonchli maydondan kiring.",
       "cardTitle": "Vaultga kirish",
       "helper": "In-memory shifrlash sessiyasini ochish uchun master parolni kiriting.",
