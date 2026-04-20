@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type CSSProperties, useMemo, useState } from "react";
 import { Check, Copy, RefreshCw, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -22,6 +22,8 @@ type PasswordGeneratorPanelProps = {
   onOptionsChange?: (nextOptions: PasswordGeneratorOptions) => void;
 };
 
+type RangeStyle = CSSProperties & { "--range-progress": string };
+
 export function PasswordGeneratorPanel({ onApply, initialOptions, onOptionsChange }: PasswordGeneratorPanelProps) {
   const t = useTranslations();
   const copy = useCopy();
@@ -39,14 +41,16 @@ export function PasswordGeneratorPanel({ onApply, initialOptions, onOptionsChang
     setPassword(generatePassword(options));
   };
 
-  useEffect(() => {
-    setPassword(generatePassword(options));
-  }, [options]);
-
-  useEffect(() => {
-    if (!initialOptions) return;
-    setOptions(initialOptions);
-  }, [initialOptions]);
+  const applyOptionsUpdate = (
+    updater: PasswordGeneratorOptions | ((current: PasswordGeneratorOptions) => PasswordGeneratorOptions),
+  ) => {
+    setOptions((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      onOptionsChange?.(next);
+      setPassword(generatePassword(next));
+      return next;
+    });
+  };
 
   return (
     <Card className="premium-card">
@@ -89,11 +93,10 @@ export function PasswordGeneratorPanel({ onApply, initialOptions, onOptionsChang
             min={8}
             max={64}
             value={options.length}
-            style={{ "--range-progress": `${((options.length - 8) / (64 - 8)) * 100}%` } as any}
+            style={{ "--range-progress": `${((options.length - 8) / (64 - 8)) * 100}%` } as RangeStyle}
             onChange={(event) =>
-              setOptions((prev) => {
+              applyOptionsUpdate((prev) => {
                 const next = { ...prev, length: Number(event.target.value) };
-                onOptionsChange?.(next);
                 return next;
               })
             }
@@ -102,65 +105,61 @@ export function PasswordGeneratorPanel({ onApply, initialOptions, onOptionsChang
 
         <div className="grid grid-cols-2 gap-3 pt-2">
           <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-background/40 p-3 transition-all hover:border-primary/30 hover:bg-background/60">
-            <input
-              type="checkbox"
-              checked={options.uppercase}
-              onChange={(event) =>
-                setOptions((prev) => {
-                  const next = { ...prev, uppercase: event.target.checked };
-                  onOptionsChange?.(next);
-                  return next;
-                })
-              }
-            />
+              <input
+                type="checkbox"
+                checked={options.uppercase}
+                onChange={(event) =>
+                  applyOptionsUpdate((prev) => {
+                    const next = { ...prev, uppercase: event.target.checked };
+                    return next;
+                  })
+                }
+              />
             <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
               {t("vault.generator.options.uppercase")}
             </span>
           </label>
           <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-background/40 p-3 transition-all hover:border-primary/30 hover:bg-background/60">
-            <input
-              type="checkbox"
-              checked={options.numbers}
-              onChange={(event) =>
-                setOptions((prev) => {
-                  const next = { ...prev, numbers: event.target.checked };
-                  onOptionsChange?.(next);
-                  return next;
-                })
-              }
-            />
+              <input
+                type="checkbox"
+                checked={options.numbers}
+                onChange={(event) =>
+                  applyOptionsUpdate((prev) => {
+                    const next = { ...prev, numbers: event.target.checked };
+                    return next;
+                  })
+                }
+              />
             <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
               {t("vault.generator.options.numbers")}
             </span>
           </label>
           <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-background/40 p-3 transition-all hover:border-primary/30 hover:bg-background/60">
-            <input
-              type="checkbox"
-              checked={options.symbols}
-              onChange={(event) =>
-                setOptions((prev) => {
-                  const next = { ...prev, symbols: event.target.checked };
-                  onOptionsChange?.(next);
-                  return next;
-                })
-              }
-            />
+              <input
+                type="checkbox"
+                checked={options.symbols}
+                onChange={(event) =>
+                  applyOptionsUpdate((prev) => {
+                    const next = { ...prev, symbols: event.target.checked };
+                    return next;
+                  })
+                }
+              />
             <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
               {t("vault.generator.options.symbols")}
             </span>
           </label>
           <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-background/40 p-3 transition-all hover:border-primary/30 hover:bg-background/60">
-            <input
-              type="checkbox"
-              checked={options.avoidAmbiguous}
-              onChange={(event) =>
-                setOptions((prev) => {
-                  const next = { ...prev, avoidAmbiguous: event.target.checked };
-                  onOptionsChange?.(next);
-                  return next;
-                })
-              }
-            />
+              <input
+                type="checkbox"
+                checked={options.avoidAmbiguous}
+                onChange={(event) =>
+                  applyOptionsUpdate((prev) => {
+                    const next = { ...prev, avoidAmbiguous: event.target.checked };
+                    return next;
+                  })
+                }
+              />
             <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
               {t("vault.generator.options.avoidAmbiguous")}
             </span>

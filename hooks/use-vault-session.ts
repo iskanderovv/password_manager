@@ -1,15 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { clearVaultUnlocked, isVaultUnlocked, markVaultUnlocked } from "@/lib/auth/vault-session";
 
 export function useVaultSession() {
-  const [unlocked, setUnlocked] = useState(false);
-
-  useEffect(() => {
-    setUnlocked(isVaultUnlocked());
-  }, []);
+  const [unlocked, setUnlocked] = useState(() => isVaultUnlocked());
 
   const lock = useCallback(() => {
     clearVaultUnlocked();

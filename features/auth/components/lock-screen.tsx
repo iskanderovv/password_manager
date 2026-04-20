@@ -17,7 +17,6 @@ import { evaluatePasswordStrength } from "@/lib/auth/password-policy";
 import { clearVaultUnlocked, isVaultUnlocked } from "@/lib/auth/vault-session";
 import { deriveKey } from "@/lib/crypto/vault-crypto";
 import { clearActiveVaultKey, getActiveVaultKey, setActiveVaultKey } from "@/lib/crypto/key-store";
-import { cn } from "@/lib/utils";
 
 import { PasswordStrengthMeter } from "./password-strength";
 

@@ -5,7 +5,7 @@ import { Check, ChevronDown, Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
-import { localeCookieName, locales, type Locale } from "@/lib/i18n/config";
+import { locales, persistLocaleCookie, type Locale } from "@/lib/i18n/config";
 
 export function LocaleSwitcher() {
   const router = useRouter();
@@ -40,7 +40,7 @@ export function LocaleSwitcher() {
   const applyLocale = (nextLocale: Locale) => {
     setOpen(false);
     if (nextLocale === locale) return;
-    document.cookie = `${localeCookieName}=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
+    persistLocaleCookie(nextLocale);
     router.refresh();
   };
 
@@ -76,6 +76,7 @@ export function LocaleSwitcher() {
                 className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-sm transition ${
                   selected ? "bg-primary/15 text-primary" : "bg-card hover:bg-muted/80"
                 }`}
+                role="option"
                 aria-selected={selected}
               >
                 <span>{t(`locales.${value}`)}</span>

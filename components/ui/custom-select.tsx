@@ -58,20 +58,23 @@ export function CustomSelect({ value, onValueChange, options, ariaLabel, classNa
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-
+  const getInitialIndex = () => {
     const selectedIndex = options.findIndex((option) => option.value === value && !option.disabled);
     const firstEnabledIndex = options.findIndex((option) => !option.disabled);
-    const initialIndex = selectedIndex >= 0 ? selectedIndex : firstEnabledIndex;
+    return selectedIndex >= 0 ? selectedIndex : firstEnabledIndex;
+  };
 
+  const openMenu = () => {
+    const initialIndex = getInitialIndex();
     setHighlightedIndex(initialIndex);
+    setOpen(true);
+
     if (initialIndex >= 0) {
       window.requestAnimationFrame(() => {
         optionRefs.current[initialIndex]?.focus();
       });
     }
-  }, [open, options, value]);
+  };
 
   const getNextEnabledIndex = (startIndex: number, direction: 1 | -1) => {
     if (!options.length) return -1;
@@ -105,11 +108,19 @@ export function CustomSelect({ value, onValueChange, options, ariaLabel, classNa
           "hover:border-primary/35 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30",
           open && "border-primary/50 ring-2 ring-ring/20",
         )}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          if (open) {
+            setOpen(false);
+            return;
+          }
+          openMenu();
+        }}
         onKeyDown={(event) => {
           if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            setOpen(true);
+            if (!open) {
+              openMenu();
+            }
           }
         }}
       >

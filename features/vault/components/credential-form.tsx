@@ -40,6 +40,8 @@ type FormValues = {
   isPinned: boolean;
 };
 
+type CredentialFieldErrors = NonNullable<Extract<CredentialActionResult, { ok: false }>["fieldErrors"]>;
+
 function initialFormValues(): FormValues {
   return {
     serviceName: "",
@@ -62,7 +64,7 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
   const [isSubmitting, startSubmitting] = useTransition();
   const [isDeleting, startDeleting] = useTransition();
 
-  const [fieldErrors, setFieldErrors] = useState<CredentialActionResult["fieldErrors"]>({});
+  const [fieldErrors, setFieldErrors] = useState<CredentialFieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [values, setValues] = useState<FormValues>(() => initialFormValues());
   const [showPassword, setShowPassword] = useState(false);
@@ -80,12 +82,10 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
     const keyState = getActiveVaultKey();
 
     if (!keyState) {
-      setFormError("vault.errors.unlockRequired");
-      setIsDecrypting(false);
+      router.replace("/lock");
       return;
     }
 
-    setIsDecrypting(true);
     void decryptCredentialRecord(credential, keyState.key)
       .then((decrypted) => {
         if (cancelled) return;
@@ -111,7 +111,7 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
     return () => {
       cancelled = true;
     };
-  }, [credential, mode]);
+  }, [credential, mode, router]);
 
   const strength = useMemo(
     () => evaluateCredentialPasswordStrength(values.password),

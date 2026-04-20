@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Avatar } from "@/components/ui/avatar";
@@ -24,11 +24,7 @@ type HomeOverviewProps = {
 export function HomeOverview({ metrics }: HomeOverviewProps) {
   const t = useTranslations();
   const { preferences } = useAppPreferences();
-  const [lastUnlockedAt, setLastUnlockedAt] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLastUnlockedAt(getLastUnlockedAt());
-  }, []);
+  const [lastUnlockedAt] = useState<string | null>(() => getLastUnlockedAt());
 
   return (
     <div className="space-y-6">

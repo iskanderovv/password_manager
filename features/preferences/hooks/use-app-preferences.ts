@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
   defaultAppPreferences,
@@ -10,11 +10,7 @@ import {
 } from "@/features/preferences/lib/preferences-store";
 
 export function useAppPreferences() {
-  const [preferences, setPreferencesState] = useState<AppPreferences>(defaultAppPreferences);
-
-  useEffect(() => {
-    setPreferencesState(readAppPreferences());
-  }, []);
+  const [preferences, setPreferencesState] = useState<AppPreferences>(() => readAppPreferences() ?? defaultAppPreferences);
 
   const setPreferences = useCallback(
     (updater: AppPreferences | ((current: AppPreferences) => AppPreferences)) => {

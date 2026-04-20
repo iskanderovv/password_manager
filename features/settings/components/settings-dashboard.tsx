@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { type CSSProperties, useEffect, useMemo, useState, useTransition } from "react";
 import { Download, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -39,6 +39,7 @@ type SettingsDashboardProps = {
 };
 
 type ExportKind = "json" | "csv";
+type RangeStyle = CSSProperties & { "--range-progress": string };
 
 const autoLockModes: AutoLockMode[] = ["5m", "15m", "30m", "on-close", "manual"];
 
@@ -83,7 +84,6 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
     const keyState = getActiveVaultKey();
 
     if (!keyState) {
-      setDecryptedCredentials([]);
       return;
     }
 
@@ -404,7 +404,7 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
               type="range"
               min={8}
               max={64}
-              style={{ "--range-progress": `${((preferences.generator.length - 8) / (64 - 8)) * 100}%` } as any}
+              style={{ "--range-progress": `${((preferences.generator.length - 8) / (64 - 8)) * 100}%` } as RangeStyle}
               value={preferences.generator.length}
               onChange={(event) =>
                 setPreferences((current) => ({

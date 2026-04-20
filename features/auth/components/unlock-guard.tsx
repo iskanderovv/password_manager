@@ -14,7 +14,7 @@ type UnlockGuardProps = {
 export function UnlockGuard({ children }: UnlockGuardProps) {
   const t = useTranslations();
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(() => isVaultUnlocked() && Boolean(getActiveVaultKey()));
 
   useEffect(() => {
     const unlocked = isVaultUnlocked();
@@ -28,7 +28,6 @@ export function UnlockGuard({ children }: UnlockGuardProps) {
     }
 
     if (keyState) {
-      setReady(true);
       return;
     }
 

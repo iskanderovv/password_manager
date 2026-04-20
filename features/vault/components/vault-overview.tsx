@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { Check, Copy, Eye, EyeOff, Fingerprint, List, Pencil, Plus, Rows3, ShieldAlert, ShieldCheck, Sparkles, Star, Trash2 } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, List, Pencil, Plus, Rows3, ShieldAlert, Sparkles, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -118,16 +118,6 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
   });
 
   useEffect(() => {
-    setFilters((current) => ({
-      ...current,
-      query: initialFilters?.query ?? "",
-      issue: initialFilters?.issue ?? "all",
-      strength: initialFilters?.strength ?? "all",
-      reusedOnly: initialFilters?.reusedOnly ?? false,
-    }));
-  }, [initialFilters?.query, initialFilters?.issue, initialFilters?.strength, initialFilters?.reusedOnly]);
-
-  useEffect(() => {
     const keyState = getActiveVaultKey();
     if (!keyState) {
       router.replace("/lock");
@@ -140,8 +130,6 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
     }
 
     let cancelled = false;
-    setIsDecrypting(true);
-    setDecryptError(null);
 
     void Promise.all(payload.credentials.map((record) => decryptCredentialRecord(record, keyState.key)))
       .then((records) => {
@@ -179,13 +167,16 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
   }, [credentials]);
 
   useEffect(() => {
+    const revealTimeouts = revealTimeoutsRef.current;
+    const copyTimeout = copyTimeoutRef.current;
+
     return () => {
-      Object.values(revealTimeoutsRef.current).forEach((timeoutId) => {
+      Object.values(revealTimeouts).forEach((timeoutId) => {
         window.clearTimeout(timeoutId);
       });
 
-      if (copyTimeoutRef.current) {
-        window.clearTimeout(copyTimeoutRef.current);
+      if (copyTimeout) {
+        window.clearTimeout(copyTimeout);
       }
     };
   }, []);
@@ -376,7 +367,7 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
 
         notify({ message: t("vault.demo.loaded"), variant: "success" });
         router.refresh();
-      } catch (error) {
+      } catch {
         notify({ message: t("vault.demo.loadFailed"), variant: "error" });
       }
     });
@@ -748,7 +739,7 @@ export function VaultOverview({ payload, initialFilters }: VaultOverviewProps) {
               <Button type="button" variant="outline" className="flex-1" onClick={() => setDeleteTarget(null)}>
                 {t("common.cancel")}
               </Button>
-              <Button type="button" variant="critical" className="flex-1 bg-rose-600 hover:bg-rose-700 text-white" onClick={confirmDelete} disabled={isPending}>
+              <Button type="button" variant="default" className="flex-1 bg-rose-600 hover:bg-rose-700 text-white" onClick={confirmDelete} disabled={isPending}>
                 {isPending ? t("vault.deleteConfirm.deleting") : t("vault.deleteConfirm.confirm")}
               </Button>
             </CardContent>

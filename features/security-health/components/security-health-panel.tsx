@@ -19,16 +19,15 @@ export function SecurityHealthPanel({ payload }: SecurityHealthPanelProps) {
   const t = useTranslations();
   const router = useRouter();
   const [decryptedCredentials, setDecryptedCredentials] = useState<Awaited<ReturnType<typeof decryptCredentialRecord>>[]>([]);
-  const [decryptError, setDecryptError] = useState<string | null>(null);
+  const [decryptError, setDecryptError] = useState<string | null>(() =>
+    getActiveVaultKey() ? null : "vault.errors.unlockRequired",
+  );
   const [health, setHealth] = useState<Awaited<ReturnType<typeof analyzeSecurityHealth>> | null>(null);
 
   useEffect(() => {
     const keyState = getActiveVaultKey();
 
     if (!keyState) {
-      setDecryptError("vault.errors.unlockRequired");
-      setDecryptedCredentials([]);
-      setHealth(null);
       return;
     }
 
@@ -38,16 +37,17 @@ export function SecurityHealthPanel({ payload }: SecurityHealthPanelProps) {
     }
 
     let cancelled = false;
-    setDecryptError(null);
 
     void Promise.all(payload.credentials.map((record) => decryptCredentialRecord(record, keyState.key)))
       .then((records) => {
         if (cancelled) return;
+        setDecryptError(null);
         setDecryptedCredentials(records);
       })
       .catch(() => {
         if (cancelled) return;
         setDecryptError("vault.errors.decryptFailed");
+        setHealth(null);
       });
 
     return () => {

@@ -1,5 +1,6 @@
 import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import type { ComponentProps } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ type EmptyStateProps = {
   title: string;
   description: string;
   action: string;
-  actionHref?: string;
+  actionHref?: ComponentProps<typeof Link>["href"];
 };
 
 export function EmptyState({ title, description, action, actionHref }: EmptyStateProps) {
@@ -23,9 +24,15 @@ export function EmptyState({ title, description, action, actionHref }: EmptyStat
         <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
         <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">{description}</p>
         <div className="mt-6">
-          <Button asChild variant="secondary">
-            <Link href={actionHref ?? "#"}>{action}</Link>
-          </Button>
+          {actionHref ? (
+            <Button asChild variant="secondary">
+              <Link href={actionHref}>{action}</Link>
+            </Button>
+          ) : (
+            <Button variant="secondary" disabled>
+              {action}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

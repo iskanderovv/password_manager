@@ -12,3 +12,8 @@ export function isLocale(value: string): value is Locale {
 export function resolveLocale(value: string | undefined | null): Locale {
   return value && isLocale(value) ? value : defaultLocale;
 }
+
+export function persistLocaleCookie(locale: Locale) {
+  if (typeof document === "undefined") return;
+  document.cookie = `${localeCookieName}=${locale}; path=/; max-age=31536000; samesite=lax`;
+}
