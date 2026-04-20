@@ -22,7 +22,6 @@ export function LockVaultButton() {
           lock();
           clearActiveVaultKey();
           router.replace("/lock");
-          router.refresh();
         });
       }}
       className="inline-flex h-10 items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-3 text-sm text-muted-foreground transition hover:text-foreground"

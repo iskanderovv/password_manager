@@ -13,7 +13,7 @@ import { createMasterPasswordAction, unlockVaultAction } from "@/features/auth/a
 import { initialLockActionState } from "@/features/auth/action-state";
 import { useVaultSession } from "@/hooks/use-vault-session";
 import { evaluatePasswordStrength } from "@/lib/auth/password-policy";
-import { clearVaultUnlocked, isVaultUnlocked, lockIfPageReloaded } from "@/lib/auth/vault-session";
+import { clearVaultUnlocked, isVaultUnlocked } from "@/lib/auth/vault-session";
 import { deriveKey } from "@/lib/crypto/vault-crypto";
 import { clearActiveVaultKey, getActiveVaultKey, setActiveVaultKey } from "@/lib/crypto/key-store";
 
@@ -55,8 +55,6 @@ export function LockScreen({ hasVault }: LockScreenProps) {
   const unlockIsValid = unlockPassword.length > 0;
 
   useEffect(() => {
-    lockIfPageReloaded();
-
     const unlocked = isVaultUnlocked();
     const keyState = getActiveVaultKey();
 
@@ -112,7 +110,6 @@ export function LockScreen({ hasVault }: LockScreenProps) {
         setConfirmPassword("");
         setUnlockPassword("");
         router.replace("/vault");
-        router.refresh();
       } catch {
         setClientErrorKey("lock.errors.unexpected");
       } finally {

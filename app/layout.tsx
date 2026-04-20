@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTimeZone } from "next-intl/server";
 
 import { Providers } from "@/components/providers";
 import { resolveLocale } from "@/lib/i18n/config";
@@ -34,6 +34,7 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const timeZone = await getTimeZone();
   const resolvedLocale = resolveLocale(locale);
 
   return (
@@ -43,7 +44,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
-        <Providers locale={resolvedLocale} messages={messages}>
+        <Providers locale={resolvedLocale} messages={messages} timeZone={timeZone}>
           {children}
         </Providers>
       </body>

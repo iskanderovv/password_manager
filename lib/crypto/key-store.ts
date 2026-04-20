@@ -7,16 +7,22 @@ type ActiveVaultKeyState = {
   encryptionKeyVersion: number;
 };
 
-let activeVaultKeyState: ActiveVaultKeyState | null = null;
+const globalForVaultKeyStore = globalThis as unknown as {
+  __cipherteamsActiveVaultKeyState?: ActiveVaultKeyState | null;
+};
+
+function getState() {
+  return globalForVaultKeyStore.__cipherteamsActiveVaultKeyState ?? null;
+}
 
 export function setActiveVaultKey(state: ActiveVaultKeyState) {
-  activeVaultKeyState = state;
+  globalForVaultKeyStore.__cipherteamsActiveVaultKeyState = state;
 }
 
 export function getActiveVaultKey() {
-  return activeVaultKeyState;
+  return getState();
 }
 
 export function clearActiveVaultKey() {
-  activeVaultKeyState = null;
+  globalForVaultKeyStore.__cipherteamsActiveVaultKeyState = null;
 }

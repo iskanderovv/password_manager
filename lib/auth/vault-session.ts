@@ -32,14 +32,3 @@ export function clearVaultOnRefreshOrClose() {
     window.removeEventListener("beforeunload", lockHandler);
   };
 }
-
-export function lockIfPageReloaded() {
-  if (!hasWindow()) return;
-
-  const navEntries = window.performance.getEntriesByType("navigation");
-  const navEntry = navEntries[0] as PerformanceNavigationTiming | undefined;
-
-  if (navEntry?.type === "reload") {
-    clearVaultUnlocked();
-  }
-}
