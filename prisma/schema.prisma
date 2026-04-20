@@ -1,0 +1,231 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum VaultStatus {
+  LOCKED
+  ACTIVE
+  ARCHIVED
+}
+
+enum SecurityEventType {
+  VAULT_LOCKED
+  VAULT_UNLOCKED
+  CREDENTIAL_CREATED
+  CREDENTIAL_UPDATED
+  CREDENTIAL_VIEWED
+  CREDENTIAL_COPIED
+  CREDENTIAL_EXPORTED
+  CREDENTIAL_DELETED
+  SECURITY_ALERT
+}
+
+enum SecuritySeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum SecretAlgorithm {
+  XCHACHA20_POLY1305
+  AES_256_GCM
+}
+
+enum HashAlgorithm {
+  SHA256
+  BLAKE3
+}
+
+model Team {
+  id          String           @id @default(cuid())
+  name        String
+  slug        String           @unique
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  memberships TeamMembership[]
+  vaults      Vault[]
+}
+
+model TeamMembership {
+  id        String   @id @default(cuid())
+  teamId    String
+  userId    String
+  role      TeamRole @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([userId])
+}
+
+model User {
+  id                 String            @id @default(cuid())
+  email              String            @unique
+  fullName           String?
+  avatarUrl          String?
+  locale             String            @default("uz")
+  timezone           String            @default("UTC")
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  memberships        TeamMembership[]
+  ownedVaults        Vault[]           @relation("VaultOwner")
+  vaultPreferences   VaultPreference[]
+  auditEvents        SecurityEvent[]   @relation("ActorSecurityEvents")
+  createdCredentials Credential[]      @relation("CredentialCreatedBy")
+  updatedCredentials Credential[]      @relation("CredentialUpdatedBy")
+}
+
+model Vault {
+  id                     String                @id @default(cuid())
+  teamId                 String
+  ownerId                String?
+  name                   String
+  slug                   String
+  description            String?
+  status                 VaultStatus           @default(LOCKED)
+  defaultAutoLockMinutes Int                   @default(15)
+  requireUnlockForExport Boolean               @default(true)
+  hideSecretsByDefault   Boolean               @default(true)
+  allowClipboardCopy     Boolean               @default(true)
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  team                   Team                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  owner                  User?                 @relation("VaultOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  credentials            Credential[]
+  tags                   CredentialTag[]
+  preferences            VaultPreference[]
+  securityEvents         SecurityEvent[]
+  insightSnapshots       VaultInsightSnapshot[]
+
+  @@unique([teamId, slug])
+  @@index([teamId, updatedAt])
+}
+
+model Credential {
+  id                      String                  @id @default(cuid())
+  vaultId                 String
+  createdById             String?
+  updatedById             String?
+  serviceName             String
+  serviceUrl              String?
+  usernameEncrypted       String
+  passwordEncrypted       String
+  notesEncrypted          String?
+  encryptionAlgorithm     SecretAlgorithm         @default(XCHACHA20_POLY1305)
+  encryptionKeyVersion    Int                     @default(1)
+  passwordFingerprintHash String?                 @db.VarChar(128)
+  passwordFingerprintAlgo HashAlgorithm?
+  passwordStrengthScore   Int?
+  passwordChangedAt       DateTime?
+  lastRotatedAt           DateTime?
+  rotationIntervalDays    Int?
+  reusedPasswordRisk      Boolean                 @default(false)
+  missingUrlRisk          Boolean                 @default(false)
+  staleRisk               Boolean                 @default(false)
+  compromisedAt           DateTime?
+  isArchived              Boolean                 @default(false)
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  vault                   Vault                   @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  createdBy               User?                   @relation("CredentialCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy               User?                   @relation("CredentialUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  tags                    CredentialTagOnRecord[]
+  securityEvents          SecurityEvent[]         @relation("CredentialSecurityEvents")
+
+  @@index([vaultId, serviceName])
+  @@index([vaultId, updatedAt])
+  @@index([vaultId, passwordFingerprintHash])
+}
+
+model CredentialTag {
+  id          String                @id @default(cuid())
+  vaultId     String
+  name        String
+  color       String?
+  category    String?
+  description String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  vault       Vault                 @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  credentials CredentialTagOnRecord[]
+
+  @@unique([vaultId, name])
+  @@index([vaultId, category])
+}
+
+model CredentialTagOnRecord {
+  credentialId String
+  tagId        String
+  linkedAt     DateTime      @default(now())
+  credential   Credential    @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  tag          CredentialTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([credentialId, tagId])
+}
+
+model VaultPreference {
+  id                     String   @id @default(cuid())
+  vaultId                String
+  userId                 String
+  compactMode            Boolean  @default(false)
+  showOnlyOwnedRecords   Boolean  @default(false)
+  defaultView            String   @default("list")
+  pinInsightsToTop       Boolean  @default(true)
+  lastViewedCredentialId String?
+  lastUnlockedAt         DateTime?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  vault                  Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([vaultId, userId])
+}
+
+model SecurityEvent {
+  id           String           @id @default(cuid())
+  vaultId      String
+  credentialId String?
+  actorId      String?
+  eventType    SecurityEventType
+  severity     SecuritySeverity @default(INFO)
+  message      String
+  metadata     Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime         @default(now())
+  vault        Vault            @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  credential   Credential?      @relation("CredentialSecurityEvents", fields: [credentialId], references: [id], onDelete: SetNull)
+  actor        User?            @relation("ActorSecurityEvents", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([vaultId, eventType, createdAt])
+  @@index([credentialId, createdAt])
+}
+
+model VaultInsightSnapshot {
+  id                  String   @id @default(cuid())
+  vaultId             String
+  generatedAt         DateTime @default(now())
+  totalCredentials    Int      @default(0)
+  reusedPasswordCount Int      @default(0)
+  weakPasswordCount   Int      @default(0)
+  missingUrlCount     Int      @default(0)
+  staleCredentialCount Int     @default(0)
+  payload             Json?
+  vault               Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+
+  @@index([vaultId, generatedAt])
+}

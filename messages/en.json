@@ -1,0 +1,143 @@
+{
+  "common": {
+    "appName": "CipherTeams",
+    "appTagline": "Team Vault Platform",
+    "planned": "Planned",
+    "uiScaffold": "UI scaffold only. Business logic is intentionally deferred to the next step.",
+    "searchPlaceholder": "Search credentials, systems, users, or tags",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "workspace": "Workspace",
+    "security": "Security",
+    "statusHealthy": "Healthy baseline",
+    "statusNeedsAttention": "Needs attention",
+    "placeholderTeam": "Operations Team",
+    "placeholderUser": "Alex Admin",
+    "recordId": "Credential ID",
+    "saveDraft": "Save draft",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "lockNow": "Lock now",
+    "comingSoon": "Coming soon"
+  },
+  "nav": {
+    "vault": "Vault",
+    "newCredential": "Add Credential",
+    "settings": "Settings",
+    "lock": "Lock Screen"
+  },
+  "topbar": {
+    "quickSearch": "Quick search",
+    "commandHint": "Press Ctrl+K"
+  },
+  "lock": {
+    "eyebrow": "Secure team access",
+    "title": "Unlock your team vault",
+    "subtitle": "Access shared credentials for cloud tools, client portals, and internal systems in one trusted workspace.",
+    "masterPasswordLabel": "Master password",
+    "masterPasswordPlaceholder": "Enter your master password",
+    "unlockButton": "Unlock vault",
+    "helper": "Unlock flow is currently scaffolded. Encryption and session state are connected in the next implementation step.",
+    "scaffoldNote": "Vault opening, session handshake, and cryptographic key handling are intentionally not implemented yet in this stage.",
+    "trustItems": {
+      "zeroKnowledge": "Prepared for zero-knowledge encryption architecture",
+      "audit": "Audit-ready event model for security timeline",
+      "speed": "Fast access model with lock-first posture"
+    }
+  },
+  "vault": {
+    "title": "Vault Overview",
+    "subtitle": "Daily workspace for operations and admin teams managing shared credentials.",
+    "addCredential": "New credential",
+    "credentialsTitle": "Credentials",
+    "credentialsEmptyTitle": "Your vault is ready for the first credential",
+    "credentialsEmptyDescription": "Start by adding one shared account, then organize access with tags by department or project.",
+    "filters": {
+      "all": "All",
+      "operations": "Operations",
+      "finance": "Finance",
+      "marketing": "Marketing",
+      "clientPortals": "Client Portals"
+    },
+    "metrics": {
+      "totalCredentials": "Total credentials",
+      "activeShares": "Active shares",
+      "updatedThisMonth": "Updated this month",
+      "pendingRotation": "Pending rotation"
+    },
+    "insights": {
+      "title": "Security Health / Vault Insights",
+      "subtitle": "Prepared for reused password, weak password, missing URL, and stale credential analytics.",
+      "reused": "Potential reused passwords",
+      "weak": "Weak password candidates",
+      "missingUrl": "Credentials missing URL",
+      "stale": "Credentials not rotated recently"
+    }
+  },
+  "vaultNew": {
+    "title": "Add Credential",
+    "subtitle": "Create a structured credential prepared for encryption and lifecycle controls.",
+    "sections": {
+      "identity": "Service identity",
+      "access": "Access data",
+      "classification": "Classification",
+      "notes": "Notes"
+    },
+    "fields": {
+      "serviceName": "Service / platform name",
+      "url": "Login URL",
+      "username": "Username or email",
+      "password": "Password",
+      "tags": "Tags",
+      "notes": "Internal notes"
+    },
+    "helper": "Credential persistence is intentionally not connected yet.",
+    "securityPanelTitle": "Security cues",
+    "securityPanelItems": {
+      "noPlainText": "No plain-text password rendering in list views",
+      "rotationReady": "Rotation metadata fields are prepared",
+      "reuseReady": "Reuse-detection hash fields are prepared"
+    }
+  },
+  "vaultDetail": {
+    "title": "Credential Details",
+    "subtitle": "Prepared edit and activity structure for future secure credential lifecycle.",
+    "snapshotTitle": "Credential snapshot",
+    "activityTitle": "Activity timeline",
+    "activityEmpty": "Timeline appears after CRUD + audit tracking is connected.",
+    "securityTitle": "Security metadata",
+    "securityEmpty": "Strength, reuse, and age indicators will be computed after decryption pipeline is implemented."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Workspace controls for security, session behavior, and interface preferences.",
+    "sections": {
+      "workspace": "Workspace profile",
+      "security": "Security and session",
+      "preferences": "Interface preferences"
+    },
+    "items": {
+      "autoLock": "Auto-lock timeout",
+      "exportGuard": "Require unlock before export",
+      "hideSecrets": "Hide sensitive values by default",
+      "locale": "Default workspace language",
+      "theme": "Theme mode",
+      "auditRetention": "Audit log retention"
+    }
+  },
+  "loading": {
+    "lock": "Preparing secure lock screen...",
+    "vault": "Loading vault workspace...",
+    "vaultNew": "Loading credential form...",
+    "vaultDetail": "Loading credential details...",
+    "settings": "Loading settings..."
+  },
+  "locales": {
+    "uz": "Uzbek",
+    "ru": "Russian",
+    "en": "English"
+  }
+}

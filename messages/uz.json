@@ -1,0 +1,143 @@
+{
+  "common": {
+    "appName": "CipherTeams",
+    "appTagline": "Jamoaviy vault platformasi",
+    "planned": "Rejalashtirilgan",
+    "uiScaffold": "Hozircha faqat UI karkas. Biznes mantiq ataylab keyingi bosqichga qoldirilgan.",
+    "searchPlaceholder": "Credential, tizim, foydalanuvchi yoki teg bo'yicha qidiring",
+    "language": "Til",
+    "theme": "Mavzu",
+    "light": "Yorug'",
+    "dark": "Qorong'i",
+    "system": "Tizim",
+    "workspace": "Ish maydoni",
+    "security": "Xavfsizlik",
+    "statusHealthy": "Barqaror holat",
+    "statusNeedsAttention": "E'tibor talab qiladi",
+    "placeholderTeam": "Operatsiyalar jamoasi",
+    "placeholderUser": "Alex Admin",
+    "recordId": "Credential ID",
+    "saveDraft": "Qoralama saqlash",
+    "cancel": "Bekor qilish",
+    "continue": "Davom etish",
+    "lockNow": "Qulflash",
+    "comingSoon": "Tez orada"
+  },
+  "nav": {
+    "vault": "Vault",
+    "newCredential": "Credential qo'shish",
+    "settings": "Sozlamalar",
+    "lock": "Qulf ekrani"
+  },
+  "topbar": {
+    "quickSearch": "Tezkor qidiruv",
+    "commandHint": "Ctrl+K ni bosing"
+  },
+  "lock": {
+    "eyebrow": "Jamoa uchun xavfsiz kirish",
+    "title": "Jamoa vaultini oching",
+    "subtitle": "Bulut servislar, mijoz portallari va ichki tizimlar uchun umumiy credentiallarga bitta ishonchli maydondan kiring.",
+    "masterPasswordLabel": "Master parol",
+    "masterPasswordPlaceholder": "Master parolni kiriting",
+    "unlockButton": "Vaultni ochish",
+    "helper": "Unlock oqimi hozircha karkas. Shifrlash va sessiya holati keyingi bosqichda ulanadi.",
+    "scaffoldNote": "Vaultni ochish, session handshake va kriptografik kalitlarni boshqarish bu bosqichda ataylab hali implement qilinmagan.",
+    "trustItems": {
+      "zeroKnowledge": "Zero-knowledge shifrlash arxitekturasi uchun tayyor",
+      "audit": "Xavfsizlik timeline uchun auditga tayyor hodisa modeli",
+      "speed": "Lock-first yondashuvi bilan tezkor kirish modeli"
+    }
+  },
+  "vault": {
+    "title": "Vault ko'rinishi",
+    "subtitle": "Operatsiya va admin jamoalari uchun umumiy credentiallarni boshqaradigan kundalik ish maydoni.",
+    "addCredential": "Yangi credential",
+    "credentialsTitle": "Credentiallar",
+    "credentialsEmptyTitle": "Vault birinchi credential uchun tayyor",
+    "credentialsEmptyDescription": "Bitta umumiy akkauntdan boshlang, keyin bo'lim yoki loyiha bo'yicha teglar bilan tartiblang.",
+    "filters": {
+      "all": "Barchasi",
+      "operations": "Operatsiyalar",
+      "finance": "Moliya",
+      "marketing": "Marketing",
+      "clientPortals": "Mijoz portallari"
+    },
+    "metrics": {
+      "totalCredentials": "Jami credential",
+      "activeShares": "Faol ulashishlar",
+      "updatedThisMonth": "Shu oy yangilangan",
+      "pendingRotation": "Rotatsiya kutilmoqda"
+    },
+    "insights": {
+      "title": "Security Health / Vault Insights",
+      "subtitle": "Takror parol, kuchsiz parol, URL yo'qligi va eskirgan credential analitikasi uchun tayyor.",
+      "reused": "Taxminiy takror parollar",
+      "weak": "Kuchsiz parol nomzodlari",
+      "missingUrl": "URL'siz credentiallar",
+      "stale": "Yaqinda rotatsiya qilinmagan credentiallar"
+    }
+  },
+  "vaultNew": {
+    "title": "Credential qo'shish",
+    "subtitle": "Shifrlash va lifecycle nazorati uchun tayyorlangan strukturalangan credential yarating.",
+    "sections": {
+      "identity": "Servis identifikatsiyasi",
+      "access": "Kirish ma'lumotlari",
+      "classification": "Klassifikatsiya",
+      "notes": "Izohlar"
+    },
+    "fields": {
+      "serviceName": "Servis / platforma nomi",
+      "url": "Login URL",
+      "username": "Foydalanuvchi nomi yoki email",
+      "password": "Parol",
+      "tags": "Teglar",
+      "notes": "Ichki izohlar"
+    },
+    "helper": "Ma'lumotni saqlash mantiqi hozircha ataylab ulanmagan.",
+    "securityPanelTitle": "Xavfsizlik signallari",
+    "securityPanelItems": {
+      "noPlainText": "Ro'yxat ko'rinishida parollar ochiq matnda ko'rsatilmaydi",
+      "rotationReady": "Rotatsiya metama'lumotlari uchun maydonlar tayyor",
+      "reuseReady": "Takror aniqlash hash maydonlari tayyor"
+    }
+  },
+  "vaultDetail": {
+    "title": "Credential tafsilotlari",
+    "subtitle": "Kelajakdagi xavfsiz credential lifecycle uchun tahrirlash va faoliyat tuzilmasi tayyor.",
+    "snapshotTitle": "Credential snapshot",
+    "activityTitle": "Faoliyat tarixi",
+    "activityEmpty": "CRUD va audit tracking ulangach timeline shu yerda chiqadi.",
+    "securityTitle": "Xavfsizlik metama'lumotlari",
+    "securityEmpty": "Kuchlilik, takrorlanish va yoshi indikatorlari decryption pipeline joriy qilingach hisoblanadi."
+  },
+  "settings": {
+    "title": "Sozlamalar",
+    "subtitle": "Ish maydoni uchun xavfsizlik, sessiya xulqi va interfeys boshqaruvlari.",
+    "sections": {
+      "workspace": "Ish maydoni profili",
+      "security": "Xavfsizlik va sessiya",
+      "preferences": "Interfeys sozlamalari"
+    },
+    "items": {
+      "autoLock": "Auto-lock taymauti",
+      "exportGuard": "Eksportdan oldin unlock talab qilish",
+      "hideSecrets": "Nozik qiymatlarni default holatda yashirish",
+      "locale": "Ish maydoni standart tili",
+      "theme": "Mavzu rejimi",
+      "auditRetention": "Audit log saqlash muddati"
+    }
+  },
+  "loading": {
+    "lock": "Xavfsiz qulf ekrani tayyorlanmoqda...",
+    "vault": "Vault ish maydoni yuklanmoqda...",
+    "vaultNew": "Credential formasi yuklanmoqda...",
+    "vaultDetail": "Credential tafsilotlari yuklanmoqda...",
+    "settings": "Sozlamalar yuklanmoqda..."
+  },
+  "locales": {
+    "uz": "O'zbekcha",
+    "ru": "Ruscha",
+    "en": "Inglizcha"
+  }
+}
