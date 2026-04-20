@@ -5,6 +5,7 @@ import type { AbstractIntlMessages } from "next-intl";
 import { ThemeProvider } from "next-themes";
 
 import type { Locale } from "@/lib/i18n/config";
+import { ToastProvider } from "@/components/ui/toast-provider";
 
 type ProvidersProps = {
   locale: Locale;
@@ -17,7 +18,7 @@ export function Providers({ locale, messages, timeZone, children }: ProvidersPro
   return (
     <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </ThemeProvider>
     </NextIntlClientProvider>
   );

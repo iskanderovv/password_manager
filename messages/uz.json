@@ -94,30 +94,142 @@
   "vault": {
     "title": "Vault ko'rinishi",
     "subtitle": "Operatsiya va admin jamoalari uchun umumiy credentiallarni boshqaradigan kundalik ish maydoni.",
+    "newTitle": "Credential qo'shish",
+    "newSubtitle": "Nozik maydonlari shifrlanadigan va teglar bilan tartiblanadigan credential yarating.",
+    "detailTitle": "Credentialni tahrirlash",
+    "detailSubtitle": "Kirish ma'lumotlarini yangilang, parolni rotatsiya qiling va metama'lumotni toza saqlang.",
     "addCredential": "Yangi credential",
-    "credentialsTitle": "Credentiallar",
-    "credentialsEmptyTitle": "Vault birinchi credential uchun tayyor",
-    "credentialsEmptyDescription": "Bitta umumiy akkauntdan boshlang, keyin bo'lim yoki loyiha bo'yicha teglar bilan tartiblang.",
+    "searchPlaceholder": "Servis, username, URL, izoh yoki teg bo'yicha qidiring",
+    "actions": {
+      "copyUsername": "Username nusxalash",
+      "copyPassword": "Parol nusxalash",
+      "copyGenerated": "Generatsiya qilingan parolni nusxalash",
+      "reveal": "Ko'rsatish",
+      "hide": "Yashirish",
+      "edit": "Tahrirlash",
+      "delete": "O'chirish",
+      "favorite": "Sevimli",
+      "regenerate": "Qayta yaratish",
+      "usePassword": "Parolni qo'llash",
+      "addTag": "Teg qo'shish"
+    },
+    "badges": {
+      "pinned": "Pin qilingan",
+      "copied": "Nusxalandi"
+    },
+    "empty": {
+      "title": "Vault birinchi credential uchun tayyor",
+      "description": "Birinchi umumiy akkauntni qo'shing, kuchli parol yarating va credentiallarni teglar bilan tartiblang."
+    },
+    "list": {
+      "decrypting": "Credentiallar xavfsiz xotirada decrypt qilinmoqda...",
+      "noMatches": "Joriy qidiruv va filterlarga mos credential topilmadi.",
+      "updatedAt": "Yangilangan: {date}"
+    },
     "filters": {
-      "all": "Barchasi",
-      "operations": "Operatsiyalar",
-      "finance": "Moliya",
-      "marketing": "Marketing",
-      "clientPortals": "Mijoz portallari"
+      "allTags": "Barcha teglar",
+      "allStrength": "Barcha kuchlilik",
+      "reusedOnly": "Faqat takrorlangan",
+      "favoritesOnly": "Faqat sevimlilar"
+    },
+    "sort": {
+      "recent": "So'nggi yangilangan",
+      "alphabetical": "Alifbo bo'yicha",
+      "weakest": "Eng kuchsizdan"
+    },
+    "strength": {
+      "weak": "Kuchsiz",
+      "fair": "O'rtacha",
+      "strong": "Kuchli"
+    },
+    "warnings": {
+      "reusedPassword": "Takrorlangan parol",
+      "missingUrl": "Bu credential uchun URL biriktirilmagan"
+    },
+    "toasts": {
+      "usernameCopied": "Username nusxalandi",
+      "passwordCopied": "Parol nusxalandi",
+      "copyFailed": "Nusxalash amalga oshmadi",
+      "created": "Credential saqlandi",
+      "updated": "Credential yangilandi",
+      "deleted": "Credential o'chirildi",
+      "generatedApplied": "Yaratilgan parol qo'llandi"
+    },
+    "errors": {
+      "unlockRequired": "Vault qulflangan. Davom etish uchun unlock qiling.",
+      "decryptFailed": "Credential ma'lumotlarini decrypt qilib bo'lmadi. Qayta unlock qiling."
     },
     "metrics": {
       "totalCredentials": "Jami credential",
-      "activeShares": "Faol ulashishlar",
-      "updatedThisMonth": "Shu oy yangilangan",
-      "pendingRotation": "Rotatsiya kutilmoqda"
+      "reusedCount": "Takrorlangan parollar",
+      "weakCount": "Kuchsiz parollar",
+      "favoriteCount": "Sevimlilar"
+    },
+    "deleteConfirm": {
+      "title": "Credential o'chirilsinmi?",
+      "description": "Bu amal credential yozuvini vaultdan olib tashlaydi.",
+      "confirm": "Credentialni o'chirish",
+      "deleting": "O'chirilmoqda..."
+    },
+    "generator": {
+      "title": "Parol generatori",
+      "previewLabel": "Yaratilgan parol",
+      "length": "Uzunligi",
+      "options": {
+        "uppercase": "Katta harflar",
+        "numbers": "Raqamlar",
+        "symbols": "Belgilar",
+        "avoidAmbiguous": "Noaniq belgilarni chetlash"
+      }
+    },
+    "form": {
+      "createTitle": "Credential tafsilotlari",
+      "editTitle": "Credential tafsilotlari",
+      "helper": "Nozik maydonlar saqlashdan oldin brauzerda shifrlanadi.",
+      "fields": {
+        "serviceName": "Servis / platforma",
+        "url": "Login URL",
+        "username": "Username yoki email",
+        "password": "Parol",
+        "tags": "Teglar",
+        "notes": "Izohlar",
+        "favorite": "Sevimli qilib belgilash",
+        "pinned": "Yuqoriga pin qilish"
+      },
+      "placeholders": {
+        "serviceName": "Masalan: HubSpot",
+        "url": "https://app.example.com/login",
+        "username": "ops@example.com",
+        "password": "Parol kiriting",
+        "tags": "Teg yozing va Enter bosing",
+        "notes": "Ixtiyoriy ichki izohlar"
+      },
+      "passwordHelper": "Kuchlilik jonli yangilanadi",
+      "metadataTitle": "Credential metama'lumoti",
+      "createdAt": "Yaratilgan",
+      "updatedAt": "Yangilangan",
+      "save": "Credentialni saqlash",
+      "submitting": "Saqlanmoqda...",
+      "decrypting": "Decrypt qilingan forma tayyorlanmoqda...",
+      "errors": {
+        "invalidInput": "Forma maydonlarini to'g'rilang.",
+        "serviceRequired": "Servis nomi majburiy.",
+        "usernameRequired": "Username majburiy.",
+        "passwordRequired": "Parol majburiy.",
+        "tooManyTags": "Ko'pi bilan 12 ta teg kiriting.",
+        "vaultMissing": "Vault sessiyasi topilmadi. Qayta unlock qiling.",
+        "notFound": "Credential topilmadi.",
+        "unexpected": "Kutilmagan xatolik. Qayta urinib ko'ring.",
+        "deleteFailed": "Credentialni o'chirib bo'lmadi."
+      }
     },
     "insights": {
       "title": "Security Health / Vault Insights",
-      "subtitle": "Takror parol, kuchsiz parol, URL yo'qligi va eskirgan credential analitikasi uchun tayyor.",
-      "reused": "Taxminiy takror parollar",
-      "weak": "Kuchsiz parol nomzodlari",
+      "subtitle": "Takror va kuchsiz parol indikatorlari faqat vault unlock holatida hisoblanadi.",
+      "reused": "Takrorlangan parollar",
+      "weak": "Kuchsiz parollar",
       "missingUrl": "URL'siz credentiallar",
-      "stale": "Yaqinda rotatsiya qilinmagan credentiallar"
+      "stale": "Eskirgan credentiallar"
     }
   },
   "vaultNew": {

@@ -94,30 +94,142 @@
   "vault": {
     "title": "Обзор vault",
     "subtitle": "Ежедневное рабочее пространство для операционных и админ-команд с общими доступами.",
+    "newTitle": "Добавить доступ",
+    "newSubtitle": "Создайте credential с шифрованием чувствительных полей и тегами для удобной группировки.",
+    "detailTitle": "Редактирование доступа",
+    "detailSubtitle": "Обновляйте учетные данные, ротируйте пароли и держите метаданные в порядке.",
     "addCredential": "Новый доступ",
-    "credentialsTitle": "Учетные данные",
-    "credentialsEmptyTitle": "Vault готов к первой записи",
-    "credentialsEmptyDescription": "Добавьте первый общий аккаунт и разложите доступы по тегам отделов или проектов.",
+    "searchPlaceholder": "Поиск по сервису, username, URL, заметкам или тегам",
+    "actions": {
+      "copyUsername": "Копировать username",
+      "copyPassword": "Копировать пароль",
+      "copyGenerated": "Копировать сгенерированный пароль",
+      "reveal": "Показать",
+      "hide": "Скрыть",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "favorite": "Избранное",
+      "regenerate": "Перегенерировать",
+      "usePassword": "Использовать пароль",
+      "addTag": "Добавить тег"
+    },
+    "badges": {
+      "pinned": "Закреплено",
+      "copied": "Скопировано"
+    },
+    "empty": {
+      "title": "Vault готов к первой записи",
+      "description": "Добавьте первый общий аккаунт, сгенерируйте сильный пароль и разложите доступы по тегам."
+    },
+    "list": {
+      "decrypting": "Расшифровка credentials в защищенной памяти...",
+      "noMatches": "По текущему поиску и фильтрам ничего не найдено.",
+      "updatedAt": "Обновлено {date}"
+    },
     "filters": {
-      "all": "Все",
-      "operations": "Операции",
-      "finance": "Финансы",
-      "marketing": "Маркетинг",
-      "clientPortals": "Клиентские порталы"
+      "allTags": "Все теги",
+      "allStrength": "Любая сложность",
+      "reusedOnly": "Только повторы",
+      "favoritesOnly": "Только избранные"
+    },
+    "sort": {
+      "recent": "Сначала новые",
+      "alphabetical": "По алфавиту",
+      "weakest": "Сначала слабые"
+    },
+    "strength": {
+      "weak": "Слабый",
+      "fair": "Средний",
+      "strong": "Сильный"
+    },
+    "warnings": {
+      "reusedPassword": "Повтор пароля",
+      "missingUrl": "Для этой записи не указан URL"
+    },
+    "toasts": {
+      "usernameCopied": "Username скопирован",
+      "passwordCopied": "Пароль скопирован",
+      "copyFailed": "Не удалось скопировать",
+      "created": "Credential сохранен",
+      "updated": "Credential обновлен",
+      "deleted": "Credential удален",
+      "generatedApplied": "Сгенерированный пароль применен"
+    },
+    "errors": {
+      "unlockRequired": "Vault заблокирован. Выполните unlock.",
+      "decryptFailed": "Не удалось расшифровать данные. Выполните unlock снова."
     },
     "metrics": {
       "totalCredentials": "Всего учетных данных",
-      "activeShares": "Активные шаринги",
-      "updatedThisMonth": "Обновлено в этом месяце",
-      "pendingRotation": "Ожидают ротации"
+      "reusedCount": "Повторы паролей",
+      "weakCount": "Слабые пароли",
+      "favoriteCount": "Избранные"
+    },
+    "deleteConfirm": {
+      "title": "Удалить credential?",
+      "description": "Запись будет удалена из vault.",
+      "confirm": "Удалить credential",
+      "deleting": "Удаление..."
+    },
+    "generator": {
+      "title": "Генератор паролей",
+      "previewLabel": "Сгенерированный пароль",
+      "length": "Длина",
+      "options": {
+        "uppercase": "Заглавные буквы",
+        "numbers": "Цифры",
+        "symbols": "Символы",
+        "avoidAmbiguous": "Без неоднозначных"
+      }
+    },
+    "form": {
+      "createTitle": "Детали credential",
+      "editTitle": "Детали credential",
+      "helper": "Чувствительные поля шифруются в браузере перед сохранением.",
+      "fields": {
+        "serviceName": "Сервис / платформа",
+        "url": "URL входа",
+        "username": "Username или email",
+        "password": "Пароль",
+        "tags": "Теги",
+        "notes": "Заметки",
+        "favorite": "Добавить в избранное",
+        "pinned": "Закрепить сверху"
+      },
+      "placeholders": {
+        "serviceName": "Например: HubSpot",
+        "url": "https://app.example.com/login",
+        "username": "ops@example.com",
+        "password": "Введите пароль",
+        "tags": "Введите тег и нажмите Enter",
+        "notes": "Внутренние заметки (опционально)"
+      },
+      "passwordHelper": "Сложность обновляется сразу",
+      "metadataTitle": "Метаданные credential",
+      "createdAt": "Создано",
+      "updatedAt": "Обновлено",
+      "save": "Сохранить credential",
+      "submitting": "Сохранение...",
+      "decrypting": "Подготовка расшифрованной формы...",
+      "errors": {
+        "invalidInput": "Проверьте поля формы.",
+        "serviceRequired": "Название сервиса обязательно.",
+        "usernameRequired": "Username обязателен.",
+        "passwordRequired": "Пароль обязателен.",
+        "tooManyTags": "Используйте не более 12 тегов.",
+        "vaultMissing": "Сессия vault не найдена. Выполните unlock снова.",
+        "notFound": "Credential не найден.",
+        "unexpected": "Произошла ошибка. Повторите попытку.",
+        "deleteFailed": "Не удалось удалить credential."
+      }
     },
     "insights": {
       "title": "Security Health / Vault Insights",
-      "subtitle": "Подготовлено для аналитики повторов паролей, слабых паролей, отсутствующих URL и устаревших доступов.",
-      "reused": "Возможные повторы паролей",
-      "weak": "Кандидаты на слабые пароли",
+      "subtitle": "Индикаторы повторов и слабых паролей считаются только в unlocked-сессии.",
+      "reused": "Повторы паролей",
+      "weak": "Слабые пароли",
       "missingUrl": "Доступы без URL",
-      "stale": "Доступы без недавней ротации"
+      "stale": "Устаревшие доступы"
     }
   },
   "vaultNew": {

@@ -94,30 +94,142 @@
   "vault": {
     "title": "Vault Overview",
     "subtitle": "Daily workspace for operations and admin teams managing shared credentials.",
+    "newTitle": "Add credential",
+    "newSubtitle": "Create a secure credential with encrypted secret fields and structured tags.",
+    "detailTitle": "Edit credential",
+    "detailSubtitle": "Update access details, rotate passwords, and keep metadata clean.",
     "addCredential": "New credential",
-    "credentialsTitle": "Credentials",
-    "credentialsEmptyTitle": "Your vault is ready for the first credential",
-    "credentialsEmptyDescription": "Start by adding one shared account, then organize access with tags by department or project.",
+    "searchPlaceholder": "Search by service, username, URL, notes, or tags",
+    "actions": {
+      "copyUsername": "Copy username",
+      "copyPassword": "Copy password",
+      "copyGenerated": "Copy generated password",
+      "reveal": "Reveal",
+      "hide": "Hide",
+      "edit": "Edit",
+      "delete": "Delete",
+      "favorite": "Favorite",
+      "regenerate": "Regenerate",
+      "usePassword": "Use password",
+      "addTag": "Add tag"
+    },
+    "badges": {
+      "pinned": "Pinned",
+      "copied": "Copied"
+    },
+    "empty": {
+      "title": "Your vault is ready for the first credential",
+      "description": "Add your first shared account, generate a strong password, and organize credentials with tags for fast team lookup."
+    },
+    "list": {
+      "decrypting": "Decrypting credentials in secure memory...",
+      "noMatches": "No credentials match your current search and filters.",
+      "updatedAt": "Updated {date}"
+    },
     "filters": {
-      "all": "All",
-      "operations": "Operations",
-      "finance": "Finance",
-      "marketing": "Marketing",
-      "clientPortals": "Client Portals"
+      "allTags": "All tags",
+      "allStrength": "All strengths",
+      "reusedOnly": "Only reused",
+      "favoritesOnly": "Only favorites"
+    },
+    "sort": {
+      "recent": "Recently updated",
+      "alphabetical": "Alphabetical",
+      "weakest": "Weakest first"
+    },
+    "strength": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "strong": "Strong"
+    },
+    "warnings": {
+      "reusedPassword": "Reused password",
+      "missingUrl": "No URL linked to this credential"
+    },
+    "toasts": {
+      "usernameCopied": "Username copied",
+      "passwordCopied": "Password copied",
+      "copyFailed": "Copy failed",
+      "created": "Credential saved",
+      "updated": "Credential updated",
+      "deleted": "Credential deleted",
+      "generatedApplied": "Generated password applied"
+    },
+    "errors": {
+      "unlockRequired": "Vault is locked. Unlock to continue.",
+      "decryptFailed": "Could not decrypt credential data. Unlock again."
     },
     "metrics": {
       "totalCredentials": "Total credentials",
-      "activeShares": "Active shares",
-      "updatedThisMonth": "Updated this month",
-      "pendingRotation": "Pending rotation"
+      "reusedCount": "Reused passwords",
+      "weakCount": "Weak passwords",
+      "favoriteCount": "Favorites"
+    },
+    "deleteConfirm": {
+      "title": "Delete credential?",
+      "description": "This removes the credential record from your vault.",
+      "confirm": "Delete credential",
+      "deleting": "Deleting..."
+    },
+    "generator": {
+      "title": "Password generator",
+      "previewLabel": "Generated password",
+      "length": "Length",
+      "options": {
+        "uppercase": "Uppercase",
+        "numbers": "Numbers",
+        "symbols": "Symbols",
+        "avoidAmbiguous": "Avoid ambiguous"
+      }
+    },
+    "form": {
+      "createTitle": "Credential details",
+      "editTitle": "Credential details",
+      "helper": "Sensitive fields are encrypted in the browser before they are saved.",
+      "fields": {
+        "serviceName": "Service / platform",
+        "url": "Login URL",
+        "username": "Username or email",
+        "password": "Password",
+        "tags": "Tags",
+        "notes": "Notes",
+        "favorite": "Mark as favorite",
+        "pinned": "Pin on top"
+      },
+      "placeholders": {
+        "serviceName": "e.g. HubSpot",
+        "url": "https://app.example.com/login",
+        "username": "ops@example.com",
+        "password": "Enter password",
+        "tags": "Add tag and press Enter",
+        "notes": "Optional internal notes"
+      },
+      "passwordHelper": "Strength updates live",
+      "metadataTitle": "Credential metadata",
+      "createdAt": "Created",
+      "updatedAt": "Updated",
+      "save": "Save credential",
+      "submitting": "Saving...",
+      "decrypting": "Preparing decrypted form...",
+      "errors": {
+        "invalidInput": "Please correct the form fields.",
+        "serviceRequired": "Service name is required.",
+        "usernameRequired": "Username is required.",
+        "passwordRequired": "Password is required.",
+        "tooManyTags": "Use up to 12 tags.",
+        "vaultMissing": "Vault session was not found. Unlock again.",
+        "notFound": "Credential was not found.",
+        "unexpected": "Unexpected error. Try again.",
+        "deleteFailed": "Could not delete credential."
+      }
     },
     "insights": {
       "title": "Security Health / Vault Insights",
-      "subtitle": "Prepared for reused password, weak password, missing URL, and stale credential analytics.",
-      "reused": "Potential reused passwords",
-      "weak": "Weak password candidates",
+      "subtitle": "Reuse and weak-password indicators are computed only while the vault is unlocked.",
+      "reused": "Reused passwords",
+      "weak": "Weak passwords",
       "missingUrl": "Credentials missing URL",
-      "stale": "Credentials not rotated recently"
+      "stale": "Stale credentials"
     }
   },
   "vaultNew": {

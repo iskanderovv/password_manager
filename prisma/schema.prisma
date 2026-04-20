@@ -138,11 +138,14 @@ model Credential {
   passwordStrengthScore   Int?
   passwordChangedAt       DateTime?
   lastRotatedAt           DateTime?
+  lastUsedAt              DateTime?
   rotationIntervalDays    Int?
   reusedPasswordRisk      Boolean                 @default(false)
   missingUrlRisk          Boolean                 @default(false)
   staleRisk               Boolean                 @default(false)
   compromisedAt           DateTime?
+  isFavorite              Boolean                 @default(false)
+  isPinned                Boolean                 @default(false)
   isArchived              Boolean                 @default(false)
   createdAt               DateTime                @default(now())
   updatedAt               DateTime                @updatedAt
@@ -154,6 +157,7 @@ model Credential {
 
   @@index([vaultId, serviceName])
   @@index([vaultId, updatedAt])
+  @@index([vaultId, isFavorite])
   @@index([vaultId, passwordFingerprintHash])
 }
 

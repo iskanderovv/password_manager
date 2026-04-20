@@ -4,7 +4,7 @@ Premium team password manager foundation built with Next.js App Router, TypeScri
 
 ## Current scope
 
-This stage delivers the product foundation and skeleton:
+This stage delivers a working secure vault baseline:
 
 - App shell (sidebar + topbar + mobile nav)
 - Routes:
@@ -17,9 +17,10 @@ This stage delivers the product foundation and skeleton:
 - Premium UI primitives and reusable composition
 - i18n with JSON dictionaries (`uz`, `ru`, `en`) via `next-intl`
 - Dark/light/system theme support via `next-themes`
-- Prisma schema draft for encryption-ready credential storage and Security Health insights
-
-Business logic (unlock, encryption/decryption, CRUD, export, real analytics) is intentionally deferred for the next implementation phase.
+- Master password onboarding and lock/unlock flow
+- Client-side key derivation + AES-GCM encryption helpers
+- Encrypted credential CRUD (create/read/update/delete) with Prisma + PostgreSQL
+- Vault overview with search/filter/sort, copy actions, generator, strength labels, and reused-password indicators
 
 ## Project structure
 
@@ -157,6 +158,8 @@ npm run prisma:generate
 ```bash
 npm run prisma:push
 ```
+
+> After pulling latest changes, run `npm run prisma:push` again because `Credential` fields were extended (`lastUsedAt`, `isFavorite`, `isPinned`).
 
 5. Start development server:
 
