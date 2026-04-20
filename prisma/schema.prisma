@@ -96,6 +96,12 @@ model Vault {
   name                   String
   slug                   String
   description            String?
+  masterPasswordHash     String?               @db.VarChar(255)
+  masterPasswordAlgo     String                @default("bcrypt")
+  keyDerivationSalt      String?               @db.VarChar(128)
+  keyDerivationIterations Int                  @default(210000)
+  keyDerivationHash      String                @default("SHA-256")
+  encryptionKeyVersion   Int                   @default(1)
   status                 VaultStatus           @default(LOCKED)
   defaultAutoLockMinutes Int                   @default(15)
   requireUnlockForExport Boolean               @default(true)

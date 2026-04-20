@@ -34,18 +34,61 @@
     "commandHint": "Ctrl+K ni bosing"
   },
   "lock": {
-    "eyebrow": "Jamoa uchun xavfsiz kirish",
-    "title": "Jamoa vaultini oching",
-    "subtitle": "Bulut servislar, mijoz portallari va ichki tizimlar uchun umumiy credentiallarga bitta ishonchli maydondan kiring.",
     "masterPasswordLabel": "Master parol",
     "masterPasswordPlaceholder": "Master parolni kiriting",
-    "unlockButton": "Vaultni ochish",
-    "helper": "Unlock oqimi hozircha karkas. Shifrlash va sessiya holati keyingi bosqichda ulanadi.",
-    "scaffoldNote": "Vaultni ochish, session handshake va kriptografik kalitlarni boshqarish bu bosqichda ataylab hali implement qilinmagan.",
+    "confirmPasswordLabel": "Master parolni tasdiqlang",
+    "confirmPasswordPlaceholder": "Master parolni qayta kiriting",
+    "showPassword": "Parolni ko'rsatish",
+    "hidePassword": "Parolni yashirish",
+    "strength": {
+      "weak": "Kuchsiz",
+      "fair": "O'rtacha",
+      "good": "Yaxshi",
+      "strong": "Kuchli"
+    },
+    "create": {
+      "title": "Master parol yarating",
+      "subtitle": "Bu parol jamoa vaultini himoya qiladi. Uni kuchli va maxfiy saqlang.",
+      "cardTitle": "Boshlang'ich xavfsizlik sozlamasi",
+      "helper": "Faqat xavfsiz xesh saqlanadi. Parolni keyin tiklab bo'lmaydi.",
+      "strengthLabel": "Parol kuchi",
+      "rules": {
+        "length": "Kamida 12 ta belgi",
+        "mixedCase": "Katta va kichik harflar",
+        "number": "Kamida bitta raqam",
+        "symbol": "Kamida bitta maxsus belgi"
+      },
+      "warning": "Bu parol yo'qolsa, keyingi bosqichlarda vault ma'lumotlarini decrypt qilish imkonsiz bo'ladi.",
+      "submit": "Vault yaratish",
+      "submitting": "Xavfsiz vault yaratilmoqda..."
+    },
+    "unlock": {
+      "title": "Jamoa vaultini oching",
+      "subtitle": "Bulut servislar, mijoz portallari va ichki tizimlar credentiallariga bitta ishonchli maydondan kiring.",
+      "cardTitle": "Vaultga kirish",
+      "helper": "In-memory shifrlash sessiyasini ochish uchun master parolni kiriting.",
+      "submit": "Vaultni ochish",
+      "submitting": "Vault ochilmoqda...",
+      "checkingSession": "Xavfsiz sessiya tekshirilmoqda...",
+      "lockVault": "Vaultni qulflash",
+      "locking": "Qulflanmoqda..."
+    },
+    "errors": {
+      "passwordRequired": "Master parol majburiy.",
+      "passwordTooShort": "Master parol kamida 12 ta belgidan iborat bo'lishi kerak.",
+      "passwordTooWeak": "Turli belgilar bilan kuchliroq parol kiriting.",
+      "confirmRequired": "Master parolni tasdiqlang.",
+      "confirmMismatch": "Parollar mos kelmadi.",
+      "invalidInput": "Belgilangan maydonlarni to'g'rilang.",
+      "alreadyInitialized": "Vault allaqachon yaratilgan. Unlock formasidan foydalaning.",
+      "setupRequired": "Unlock qilishdan oldin vault setup bajarilishi kerak.",
+      "invalidCredentials": "Master parol noto'g'ri.",
+      "databaseUnavailable": "Storage hali tayyor emas. `npm run prisma:push` ni ishga tushirib, qayta urinib ko'ring.",
+      "unexpected": "Xatolik yuz berdi. Qayta urinib ko'ring."
+    },
     "trustItems": {
       "zeroKnowledge": "Zero-knowledge shifrlash arxitekturasi uchun tayyor",
-      "audit": "Xavfsizlik timeline uchun auditga tayyor hodisa modeli",
-      "speed": "Lock-first yondashuvi bilan tezkor kirish modeli"
+      "audit": "Xavfsizlik timeline uchun auditga tayyor hodisa modeli"
     }
   },
   "vault": {

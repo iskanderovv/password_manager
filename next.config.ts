@@ -3,9 +3,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  experimental: {
-    typedRoutes: true,
-  },
+  typedRoutes: true,
 };
 
 const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");

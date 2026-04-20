@@ -34,18 +34,61 @@
     "commandHint": "Press Ctrl+K"
   },
   "lock": {
-    "eyebrow": "Secure team access",
-    "title": "Unlock your team vault",
-    "subtitle": "Access shared credentials for cloud tools, client portals, and internal systems in one trusted workspace.",
     "masterPasswordLabel": "Master password",
     "masterPasswordPlaceholder": "Enter your master password",
-    "unlockButton": "Unlock vault",
-    "helper": "Unlock flow is currently scaffolded. Encryption and session state are connected in the next implementation step.",
-    "scaffoldNote": "Vault opening, session handshake, and cryptographic key handling are intentionally not implemented yet in this stage.",
+    "confirmPasswordLabel": "Confirm master password",
+    "confirmPasswordPlaceholder": "Repeat your master password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "strength": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    },
+    "create": {
+      "title": "Create your master password",
+      "subtitle": "Set the one password that protects your team vault. Keep it strong and private.",
+      "cardTitle": "Initial security setup",
+      "helper": "We only store a secure hash of this password. It cannot be recovered later.",
+      "strengthLabel": "Password strength",
+      "rules": {
+        "length": "At least 12 characters",
+        "mixedCase": "Uppercase and lowercase letters",
+        "number": "At least one number",
+        "symbol": "At least one symbol"
+      },
+      "warning": "If you lose this password, vault data cannot be decrypted in later phases.",
+      "submit": "Create vault",
+      "submitting": "Creating secure vault..."
+    },
+    "unlock": {
+      "title": "Unlock your team vault",
+      "subtitle": "Access shared credentials for cloud tools, client portals, and internal systems in one trusted workspace.",
+      "cardTitle": "Vault access",
+      "helper": "Enter your master password to unlock an in-memory encryption session.",
+      "submit": "Unlock vault",
+      "submitting": "Unlocking vault...",
+      "checkingSession": "Checking secure session...",
+      "lockVault": "Lock vault",
+      "locking": "Locking..."
+    },
+    "errors": {
+      "passwordRequired": "Master password is required.",
+      "passwordTooShort": "Master password must be at least 12 characters.",
+      "passwordTooWeak": "Use a stronger password with mixed characters.",
+      "confirmRequired": "Please confirm your master password.",
+      "confirmMismatch": "Passwords do not match.",
+      "invalidInput": "Please correct the highlighted fields.",
+      "alreadyInitialized": "Vault is already initialized. Use unlock instead.",
+      "setupRequired": "Vault setup is required before unlock.",
+      "invalidCredentials": "Master password is incorrect.",
+      "databaseUnavailable": "Storage is not ready yet. Run `npm run prisma:push` and try again.",
+      "unexpected": "Something went wrong. Please try again."
+    },
     "trustItems": {
       "zeroKnowledge": "Prepared for zero-knowledge encryption architecture",
-      "audit": "Audit-ready event model for security timeline",
-      "speed": "Fast access model with lock-first posture"
+      "audit": "Audit-ready event model for security timeline"
     }
   },
   "vault": {

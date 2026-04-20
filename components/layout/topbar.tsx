@@ -3,6 +3,7 @@
 import { Command, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { LockVaultButton } from "@/features/auth/components/lock-vault-button";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -38,6 +39,7 @@ export function Topbar() {
 
         <LocaleSwitcher />
         <ThemeToggle />
+        <LockVaultButton />
 
         <div className="ml-auto flex items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-2 py-1.5 sm:ml-0">
           <Avatar name={t("common.placeholderUser")} />

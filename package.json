@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
+    "predev": "prisma generate",
+    "prebuild": "prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -16,6 +19,7 @@
   "dependencies": {
     "@prisma/client": "^6.8.2",
     "@radix-ui/react-slot": "^1.2.3",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.541.0",
@@ -37,8 +41,5 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   }
 }

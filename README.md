@@ -40,7 +40,7 @@ components/
   providers.tsx
 
 features/
-  lock/
+  auth/
   settings/
   vault/
 
@@ -62,6 +62,30 @@ types/
 - Default locale: `uz`
 - Message files: `messages/{uz,ru,en}.json`
 - Runtime config: `lib/i18n/request.ts`
+
+## Master password and lock flow
+
+- First visit (`/lock`) with no vault:
+  - User creates master password + confirmation
+  - Password is validated and hashed with `bcrypt`
+  - Only hash and KDF metadata are stored in database
+  - Initial team + primary vault are created
+- Unlock:
+  - Master password is verified against hash
+  - AES key is derived via PBKDF2 and stored only in in-memory key store
+  - Unlock state is stored in `sessionStorage`
+- Lock:
+  - Manual lock button clears in-memory key + session flag and redirects to `/lock`
+  - Refresh lock is enforced by clearing session on reload/close events
+
+## Crypto utilities
+
+- `lib/crypto/vault-crypto.ts`
+  - `deriveKey(masterPassword, {keyDerivationSalt, keyDerivationIterations})`
+  - `encrypt(data, key)` (AES-GCM)
+  - `decrypt(payload, key)` (AES-GCM)
+- `lib/crypto/key-store.ts`
+  - In-memory key storage only, never persisted
 
 ## Docker
 
@@ -128,7 +152,13 @@ npm install
 npm run prisma:generate
 ```
 
-4. Start development server:
+4. Push Prisma schema:
+
+```bash
+npm run prisma:push
+```
+
+5. Start development server:
 
 ```bash
 npm run dev
