@@ -388,22 +388,26 @@ export function CredentialForm({ mode, vaultId, availableTags, credential }: Cre
             />
           </label>
 
-          <div className="grid gap-2 sm:grid-cols-2">
-            <label className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-background/60 px-3 py-2 text-sm">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
               <input
                 type="checkbox"
                 checked={values.isFavorite}
                 onChange={(event) => setValues((prev) => ({ ...prev, isFavorite: event.target.checked }))}
               />
-              <span>{t("vault.form.fields.favorite")}</span>
+              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                {t("vault.form.fields.favorite")}
+              </span>
             </label>
-            <label className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-background/60 px-3 py-2 text-sm">
+            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
               <input
                 type="checkbox"
                 checked={values.isPinned}
                 onChange={(event) => setValues((prev) => ({ ...prev, isPinned: event.target.checked }))}
               />
-              <span>{t("vault.form.fields.pinned")}</span>
+              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                {t("vault.form.fields.pinned")}
+              </span>
             </label>
           </div>
 

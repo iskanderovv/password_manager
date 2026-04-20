@@ -504,17 +504,18 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
           </select>
         </label>
 
-        <div className="space-y-3 rounded-xl border border-border/70 bg-background/70 p-4">
-          <p className="text-sm font-medium">{t("settings.preferences.generator.title")}</p>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{t("settings.preferences.generator.length")}</span>
-              <span>{preferences.generator.length}</span>
+        <div className="space-y-4 rounded-xl border border-border/70 bg-background/70 p-4">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">{t("settings.preferences.generator.title")}</p>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs font-medium">
+              <span className="text-muted-foreground">{t("settings.preferences.generator.length")}</span>
+              <span className="rounded-md bg-primary/10 px-2 py-0.5 text-primary">{preferences.generator.length}</span>
             </div>
             <input
               type="range"
               min={8}
               max={64}
+              style={{ "--range-progress": `${((preferences.generator.length - 8) / (64 - 8)) * 100}%` } as any}
               value={preferences.generator.length}
               onChange={(event) =>
                 setPreferences((current) => ({
@@ -525,11 +526,10 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
                   },
                 }))
               }
-              className="w-full accent-primary"
             />
           </div>
-          <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-            <label className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-background px-2.5 py-2">
+          <div className="grid grid-cols-2 gap-3">
+            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
               <input
                 type="checkbox"
                 checked={preferences.generator.uppercase}
@@ -544,9 +544,11 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
                   }))
                 }
               />
-              {t("vault.generator.options.uppercase")}
+              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                {t("vault.generator.options.uppercase")}
+              </span>
             </label>
-            <label className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-background px-2.5 py-2">
+            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
               <input
                 type="checkbox"
                 checked={preferences.generator.numbers}
@@ -561,9 +563,11 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
                   }))
                 }
               />
-              {t("vault.generator.options.numbers")}
+              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                {t("vault.generator.options.numbers")}
+              </span>
             </label>
-            <label className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-background px-2.5 py-2">
+            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
               <input
                 type="checkbox"
                 checked={preferences.generator.symbols}
@@ -578,9 +582,11 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
                   }))
                 }
               />
-              {t("vault.generator.options.symbols")}
+              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                {t("vault.generator.options.symbols")}
+              </span>
             </label>
-            <label className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-background px-2.5 py-2">
+            <label className="group flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/50 p-3 transition-all hover:border-primary/30 hover:bg-background/80">
               <input
                 type="checkbox"
                 checked={preferences.generator.avoidAmbiguous}
@@ -595,7 +601,9 @@ export function SettingsDashboard({ payload, vaultMeta }: SettingsDashboardProps
                   }))
                 }
               />
-              {t("vault.generator.options.avoidAmbiguous")}
+              <span className="text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                {t("vault.generator.options.avoidAmbiguous")}
+              </span>
             </label>
           </div>
         </div>

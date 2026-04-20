@@ -128,3 +128,117 @@ body {
 .animate-scale-in {
   animation: scale-in 180ms ease-out;
 }
+
+/* Custom Range Input (Slider) Styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+/* Track Styling - Chrome/Safari/Edge */
+input[type="range"]::-webkit-slider-runnable-track {
+  background-color: var(--muted);
+  background-image: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--range-progress, 50%), var(--muted) var(--range-progress, 50%), var(--muted) 100%);
+  border-radius: 8px;
+  height: 8px;
+  transition: all 0.2s ease;
+}
+
+/* Track Styling - Firefox */
+input[type="range"]::-moz-range-track {
+  background-color: var(--muted);
+  border-radius: 8px;
+  height: 8px;
+}
+
+input[type="range"]::-moz-range-progress {
+  background-color: var(--primary);
+  border-radius: 8px;
+  height: 8px;
+}
+
+/* Thumb (The handle) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px; /* (16px thumb - 4px track) / 2 = -6px approx */
+  background-color: var(--card);
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  border: 3px solid var(--primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: all 0.15s ease-in-out;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background-color: var(--card);
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  border: 3px solid var(--primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: all 0.15s ease-in-out;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.1);
+  background-color: var(--primary);
+  border-color: var(--primary-foreground);
+}
+
+/* Custom Checkbox Styling */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--card);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--primary-foreground);
+  background-color: CanvasText;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--primary);
+}
